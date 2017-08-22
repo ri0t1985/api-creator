@@ -7,6 +7,12 @@
 * use selectes elements with relevant data
 * data in element is retrievable via REST-call
 
+## Milestones
+
+* API with 1 endpoint which provides hardcoded data
+* Scrape data from website into storage
+* Visually select HTML-element from target-website which contains relevant data
+
 ## Minmal Viable Learning 
 
 * The codingprocess
