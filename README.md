@@ -13,11 +13,11 @@
 * Scrape data from website into storage
 * Visually select HTML-element from target-website which contains relevant data
 
-## Minmal Viable Learning 
+## Minimal Viable Learning 
 
-* The codingprocess
+* The coding-process
 * Pair/peer-programming
-* Understanding why doding decisions are made
+* Understanding why doing decisions are made
 * How to debug an API
 * Kanban + / tasks / 
 * scrum
