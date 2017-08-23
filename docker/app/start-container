@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # place the IP-address of our host in xdebugs' config
-sed -i "s/xdebug\.remote_host\=.*/xdebug\.remote_host\=$XDEBUG_HOST/g" /etc/php/7.0/mods-available/xdebug.ini
+echo "setting $XDEBUG_HOST as remote host in your xdebug configuration file at /etc/php/7.1/cli/conf.d/20-xdebug.ini"
+sed -i "s/xdebug\.remote_host\=.*/xdebug\.remote_host\=$XDEBUG_HOST/g" /etc/php/7.1/cli/conf.d/20-xdebug.ini
 
 # start the (debug)webserver
 cd /var/www/html/web

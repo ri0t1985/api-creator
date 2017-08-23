@@ -30,7 +30,7 @@ RUN chmod +x /usr/bin/composer
 RUN echo "set -o vi" >> ~/.bashrc && \
     echo "alias ll='ls -l'" >> ~/.bashrc
 
-COPY xdebug.ini /etc/php/7.1/mods-available/xdebug.ini
+COPY xdebug.ini /etc/php/7.1/cli/conf.d/20-xdebug.ini
 
 COPY start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container

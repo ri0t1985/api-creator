@@ -62,7 +62,6 @@ if [ $# -gt 0 ];then
         echo $PWD
         ../../vendor/bin/behat "$@"
 
-
         cd $currentdir
 
     ###############################################
