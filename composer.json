@@ -1,6 +1,7 @@
 {
     "require": {
-        "silex/silex": "^2.2"
+        "silex/silex": "^2.2",
+        "sunra/php-simple-html-dom-parser": "^1.5"
     },
     "autoload": {
         "psr-0": {

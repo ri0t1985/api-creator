@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use Silex\Controller;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +42,13 @@ class DefaultController
      */
     public function getSoccerMatches()
     {
-//        $html = HtmlDomParser::file_get_html('/src_website/index.html');
+        $html = HtmlDomParser::file_get_html(__DIR__.'/../../../web/src_website/index.html');
+
+        foreach($html->find('TD') as $element)
+            echo $element->src . '<br>';
+
+        die;
+
 //
 //        var_dump($html);
 //        die;
