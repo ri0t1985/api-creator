@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -8,6 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController
 {
+
+    protected $domSelectors =
+        [
+            '',
+        ];
+
+
     protected $soccerMatches = [
        1 => [
             "id" => 1,
@@ -33,7 +41,11 @@ class DefaultController
      */
     public function getSoccerMatches()
     {
-        return new JsonResponse($this->soccerMatches);
+//        $html = HtmlDomParser::file_get_html('/src_website/index.html');
+//
+//        var_dump($html);
+//        die;
+        return new JsonResponse($this->soccerMatches, 200, ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -48,11 +60,11 @@ class DefaultController
         if (isset($this->soccerMatches[$id]))
         {
             return new JsonResponse(
-                $this->soccerMatches[$id]
+                $this->soccerMatches[$id], 200, ['Content-Type' => 'application/json']
             );
         }
 
-        return new JsonResponse(['Resource with ID: ' . $id. ' not found'], 404);
+        return new JsonResponse(['Resource with ID: ' . $id. ' not found'], 404, ['Content-Type' => 'application/json']);
     }
 
 }
