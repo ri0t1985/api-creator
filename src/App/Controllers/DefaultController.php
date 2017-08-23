@@ -5,6 +5,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+
 class DefaultController
 {
     protected $soccerMatches = [
@@ -51,7 +52,7 @@ class DefaultController
             );
         }
 
-        return new JsonResponse(['Resouce with ID: ' . $id. ' not found'], 404);
+        return new JsonResponse(['Resource with ID: ' . $id. ' not found'], 404);
     }
 
 }
