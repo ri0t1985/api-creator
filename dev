@@ -17,7 +17,6 @@ export DB_HOST=${DB_HOST:-db}
 export DB_NAME=${DB_NAME:-kate}
 export DB_USER=${DB_USER:-root}
 export DB_PASS=${DB_PASS:-root}
-export SSH_BITBUCKET_KEY=$(cat ~/.ssh/bitbucket.org)
 
 currentdir="$PWD"
 
