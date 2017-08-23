@@ -7,5 +7,10 @@
         "psr-0": {
             "App": "src/"
         }
+    },
+    "require-dev": {
+        "behat/mink-extension": "^2.2",
+        "behat/mink-goutte-driver": "^1.2",
+        "phpunit/phpunit": "^6.3"
     }
 }

@@ -1,0 +1,12 @@
+default:
+  extensions:
+    Behat\MinkExtension:
+      goutte: ~
+  suites:
+    default:
+      contexts:
+        - FeatureContext
+        - Behat\MinkExtension\Context\MinkContext
+        - ApiContext:
+            parameters:
+              base_url: http://localhost:8000
