@@ -49,9 +49,9 @@ class DefaultController
             $this->parseHtml();
         }
 
-        if (isset($this->soccerMatches[$id])) {
+        if (isset($this->soccerTeams[$id])) {
             return new JsonResponse(
-                $this->soccerMatches[$id], 200, ['Content-Type' => 'application/json']
+                $this->soccerTeams[$id], 200, ['Content-Type' => 'application/json']
             );
         }
 
