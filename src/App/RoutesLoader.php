@@ -30,6 +30,7 @@ class RoutesLoader
 
         $api->get('/soccer/matches', "default.controller:getSoccerMatches");
         $api->get('/soccer/matches/{id}', "default.controller:getSoccerMatch");
+        $api->get('/soccer/matches/search/{key}/{value}', "default.controller:searchSoccerMatches");
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
     }

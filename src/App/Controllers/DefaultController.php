@@ -58,6 +58,26 @@ class DefaultController
         return new JsonResponse(['Resource with ID: ' . $id . ' not found'], 404, ['Content-Type' => 'application/json']);
     }
 
+    public function searchSoccerMatches($key, $value)
+    {
+        if (null === $this->soccerTeams)
+        {
+            $this->parseHtml();
+        }
+
+
+        $response = [];
+        foreach ($this->soccerTeams as $soccerMatchArray)
+        {
+            if (key_exists($key, $soccerMatchArray) && $soccerMatchArray[$key] === $value)
+            {
+                $response[] = $soccerMatchArray;
+            }
+        }
+
+        return new JsonResponse($soccerMatchArray, 200, ['Content-Type' => 'application/json']);
+    }
+
     /**
      * Parses the HTML into a dom document, and processes all the dom selectors.
      */
