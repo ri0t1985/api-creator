@@ -1,0 +1,26 @@
+
+"soccer/matches"
+
+{
+	"0": {
+		"home-team": "Liverpool",
+		"visiting-team": "Arsenal",
+		"date": "09-04-2018",
+		"score": "0-2"
+	},
+	"1": {
+		"home-team": "Manchester",
+		"visiting-team": "Arsenal",
+		"date": "09-02-2018",
+		"score": "0-2"
+	}
+}
+
+"soccer/matches/<id>"
+
+{
+	"home-team": "Manchester",
+	"visiting-team": "Arsenal",
+	"date": "09-02-2018",
+	"score": "0-2"
+}
