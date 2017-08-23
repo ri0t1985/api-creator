@@ -1,11 +1,9 @@
 <?php
+
 namespace App\Controllers;
 
-use Silex\Controller;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 
 class DefaultController
@@ -13,27 +11,15 @@ class DefaultController
 
     protected $domSelectors =
         [
-            '',
+            // selector                    // alias
+            'td._RGPO__Datum'          => 'date',
+            'td._RGPO__Aanvang'        => 'match_start',
+            'td._RGPO__TeamT'          => 'home_team',
+            'td._RGPO__TeamU'          => 'visiting_team',
+            'td._RGPO__Scheidsrechter' => 'visiting_team',
+            'td._RGPO__Info'           => 'info',
         ];
-
-
-    protected $soccerMatches = [
-       1 => [
-            "id" => 1,
-            "home-team" => "Liverpool",
-            "visiting-team" => "Arsenal",
-            "date" => "09-04-2018",
-            "score" => "0-2",
-        ],
-        2 => [
-            "id" => 2,
-            "home-team" => "Manchester",
-            "visiting-team" => "Arsenal",
-            "date" => "09-02-2018",
-            "score" => "0-2",
-        ],
-    ];
-
+    protected $soccerTeams;
 
     /**
      * Returns all the soccer matches!
@@ -42,17 +28,12 @@ class DefaultController
      */
     public function getSoccerMatches()
     {
-        $html = HtmlDomParser::file_get_html(__DIR__.'/../../../web/src_website/index.html');
-
-        foreach($html->find('TD') as $element)
-            echo $element->src . '<br>';
-
-        die;
-
-//
-//        var_dump($html);
-//        die;
-        return new JsonResponse($this->soccerMatches, 200, ['Content-Type' => 'application/json']);
+        if (null === $this->soccerTeams)
+        {
+            $this->parseHtml();
+        }
+        
+        return new JsonResponse($this->soccerTeams, 200, ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -63,15 +44,31 @@ class DefaultController
      */
     public function getSoccerMatch($id)
     {
-
-        if (isset($this->soccerMatches[$id]))
+        if (null === $this->soccerTeams)
         {
+            $this->parseHtml();
+        }
+
+        if (isset($this->soccerMatches[$id])) {
             return new JsonResponse(
                 $this->soccerMatches[$id], 200, ['Content-Type' => 'application/json']
             );
         }
 
-        return new JsonResponse(['Resource with ID: ' . $id. ' not found'], 404, ['Content-Type' => 'application/json']);
+        return new JsonResponse(['Resource with ID: ' . $id . ' not found'], 404, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Parses the HTML into a dom document, and processes all the dom selectors.
+     */
+    protected function parseHtml()
+    {
+        $html = HtmlDomParser::file_get_html(__DIR__ . '/../../../web/src_website/index.html');
+
+        foreach ($this->domSelectors as $selector => $alias) {
+            foreach ($html->find($selector) as $key => $element) {
+                $this->soccerTeams[$key][$alias] = trim(strip_tags((string)$element));
+            }
+        }
+    }
 }
