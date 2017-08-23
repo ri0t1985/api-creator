@@ -16,7 +16,7 @@ class DefaultController
             'td._RGPO__Aanvang'        => 'match_start',
             'td._RGPO__TeamT'          => 'home_team',
             'td._RGPO__TeamU'          => 'visiting_team',
-            'td._RGPO__Scheidsrechter' => 'visiting_team',
+            'td._RGPO__Scheidsrechter' => 'referee',
             'td._RGPO__Info'           => 'info',
         ];
     protected $soccerTeams;
