@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+# Mac: Get host address
+export XDEBUG_HOST=$(ipconfig getifaddr en0)
+
+# Linux: Get host address
+# Via: http://stackoverflow.com/questions/13322485/how-to-i-get-the-primary-ip-address-of-the-local-machine-on-linux-and-os-x
+#export XDEBUG_HOST=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -n1)
+
+# Other env variables
+export APP_ENV=${APP_ENV:-local}
+export APP_PORT=${APP_PORT:-80}
+
+export DB_PORT=${DB_PORT:-3306}
+export DB_ROOT_PASS=${DB_ROOT_PASS:-root}
+export DB_HOST=${DB_HOST:-db}
+export DB_NAME=${DB_NAME:-kate}
+export DB_USER=${DB_USER:-root}
+export DB_PASS=${DB_PASS:-root}
+export SSH_BITBUCKET_KEY=$(cat ~/.ssh/bitbucket.org)
+
+currentdir="$PWD"
+
+# Decide which docker-compose file to use
+COMPOSE_FILE="dev"
+
+# Disable pseudo-TTY allocation for CI (Jenkins)
+TTY=""
+
+if [ ! -z "$BUILD_NUMBER" ]; then
+    COMPOSE_FILE="ci"
+    TTY="-T"
+fi
+
+COMPOSE="docker-compose -f docker-compose.$COMPOSE_FILE.yml"
+
+if [ $# -gt 0 ];then
+    ###############################################
+    # COMPOSER
+    #
+    # If "composer" is used, pass-thru to "composer"
+    # inside a new container
+    ###############################################
+    if [ "$1" == "composer" ]; then
+        shift 1
+        $COMPOSE run --rm $TTY \
+            -w /var/www/html \
+            app \
+            composer "$@"
+
+    ###############################################
+    # TEST
+    #
+    # If "test" is used, run unit tests,
+    # pass-thru any extra arguments to php-unit
+    ###############################################
+    elif [ "$1" == "test" ]; then
+        shift 1
+
+        cd tests/behat
+
+        # execute behat
+        echo $PWD
+        ../../vendor/bin/behat "$@"
+
+
+        cd $currentdir
+
+    ###############################################
+    # BASH SHELL IN CONTAINER: $ ./dev bash [app|db]
+    ###############################################
+    elif [ "$1" == "bash" ]; then
+        container="$2"
+    	if [ "$container" == "" ]; then
+			echo "ERROR: no container provided. Supply the container where you want the bash shell for as second argument";
+			$0
+			exit 1;
+		fi
+
+		shift 2
+		$COMPOSE exec $container bash
+
+    ###############################################
+    # RESTART
+    ###############################################
+    elif [ "$1" == "restart" ]; then
+        shift 1
+		$COMPOSE down && $COMPOSE up "$@"
+
+    ###############################################
+    # ELSE
+    ###############################################
+    else
+        $COMPOSE "$@"
+    fi
+else
+    $COMPOSE ps
+fi

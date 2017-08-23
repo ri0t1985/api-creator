@@ -9,4 +9,4 @@ default:
         - Behat\MinkExtension\Context\MinkContext
         - ApiContext:
             parameters:
-              base_url: http://localhost:8000
+              base_url: http://localhost:80
