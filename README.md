@@ -1,5 +1,22 @@
 # Team Michaelangelo
 
+## Installation
+
+### Dependencies
+Install the dependencies via composer from the project root:
+
+```bash
+composer install
+```
+
+### Run webserver
+Go inside the `web` directory and start PHP's internal webserver.
+
+```bash
+cd web
+php -S 0.0.0.0:8000
+````
+
 ## Minimal Viable Product
 
 * put in URL
