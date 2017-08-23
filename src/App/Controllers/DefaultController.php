@@ -75,7 +75,7 @@ class DefaultController
             }
         }
 
-        return new JsonResponse($soccerMatchArray, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($response[], 200, ['Content-Type' => 'application/json']);
     }
 
     /**
