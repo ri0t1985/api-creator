@@ -448,7 +448,9 @@ class ApiContext implements Context
     protected function getResponsePayload()
     {
         if (! $this->responsePayload) {
-            $json = json_decode($this->getResponse()->getBody(true));
+            $body = $this->getResponse()->getBody(true);
+            $json = json_decode($body);
+//            echo $body->getContents();
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $message = 'Failed to decode JSON body ';
