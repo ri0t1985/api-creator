@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Services\DatabaseServiceContainer;
+use App\Services\WebsiteService;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -9,85 +11,78 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class DefaultController
 {
 
-    protected $domSelectors =
-        [
-            // selector                    // alias
-            'td._RGPO__Datum'          => 'date',
-            'td._RGPO__Aanvang'        => 'match_start',
-            'td._RGPO__TeamT'          => 'home_team',
-            'td._RGPO__TeamU'          => 'visiting_team',
-            'td._RGPO__Scheidsrechter' => 'referee',
-            'td._RGPO__Info'           => 'info',
-        ];
-    protected $soccerTeams;
+    protected $returnValues;
 
-    /**
-     * Returns all the soccer matches!
-     *
-     * @return JsonResponse
-     */
-    public function getSoccerMatches()
+    /** @var WebsiteService  */
+    protected $databaseServiceContainer;
+
+    public function __construct(DatabaseServiceContainer $databaseServiceContainer)
     {
-        if (null === $this->soccerTeams)
-        {
-            $this->parseHtml();
-        }
-        
-        return new JsonResponse($this->soccerTeams, 200, ['Content-Type' => 'application/json']);
+        $this->databaseServiceContainer = $databaseServiceContainer;
     }
 
-    /**
-     * Returns a specific soccer match
-     *
-     * @param $id
-     * @return JsonResponse
-     */
-    public function getSoccerMatch($id)
+    public function search($website, $endpoint, $key, $value)
     {
-        if (null === $this->soccerTeams)
+        $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
+
+        if (null === $this->returnValues)
         {
-            $this->parseHtml();
+            $this->parseHtml($selectors);
         }
-
-        if (isset($this->soccerTeams[$id])) {
-            return new JsonResponse(
-                $this->soccerTeams[$id], 200, ['Content-Type' => 'application/json']
-            );
-        }
-
-        return new JsonResponse(['Resource with ID: ' . $id . ' not found'], 404, ['Content-Type' => 'application/json']);
-    }
-
-    public function searchSoccerMatches($key, $value)
-    {
-        if (null === $this->soccerTeams)
-        {
-            $this->parseHtml();
-        }
-
 
         $response = [];
-        foreach ($this->soccerTeams as $soccerMatchArray)
+        foreach ($this->returnValues as $valueArray)
         {
-            if (key_exists($key, $soccerMatchArray) && $soccerMatchArray[$key] === $value)
+            if (key_exists($key, $valueArray) && $valueArray[$key] === $value)
             {
-                $response[] = $soccerMatchArray;
+                $response[] = $valueArray;
             }
         }
 
         return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
     }
+//
+    public function processEndPoint($website, $endpoint)
+    {
+        $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
+
+        if (null === $this->returnValues)
+        {
+            $this->parseHtml($selectors, $website['url']);
+        }
+
+        return new JsonResponse($this->returnValues, 200, ['Content-Type' => 'application/json']);
+    }
 
     /**
      * Parses the HTML into a dom document, and processes all the dom selectors.
+     * @param $domSelectors
+     * @param $websiteUrl
+     * @throws \Exception
+     * @internal param $ [] $domSelectors
      */
-    protected function parseHtml()
+    protected function parseHtml($domSelectors, $websiteUrl)
     {
-        $html = HtmlDomParser::file_get_html(__DIR__ . '/../../../web/src_website/index.html', false, null, 0);
+        $c = curl_init($websiteUrl);
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 
-        foreach ($this->domSelectors as $selector => $alias) {
-            foreach ($html->find($selector) as $key => $element) {
-                $this->soccerTeams[$key][$alias] = trim(strip_tags((string)$element));
+        $html = curl_exec($c);
+
+        if (curl_error($c))
+        {
+            throw new \Exception(curl_error($c));
+        }
+
+        // Get the status code
+        $status = curl_getinfo($c, CURLINFO_HTTP_CODE);
+
+        curl_close($c);
+
+        $html = HtmlDomParser::str_get_html($html);
+
+        foreach ($domSelectors as $selector) {
+            foreach ($html->find($selector['selector']) as $key => $element) {
+                $this->returnValues[$key][$selector['alias']] = trim(strip_tags((string)$element));
             }
         }
     }
