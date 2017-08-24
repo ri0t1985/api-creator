@@ -30,6 +30,13 @@ docker-compose -f docker-compose.dev.yml up
 ./dev up
 ```
 
+Then install the database (ignore the errors)
+```bash
+./dev exec db mysqladmin -u root -proot create api
+./dev exec db mysql -u root -proot api < resources/schema.sql
+./dev exec db mysql -u root -proot api < resources/fixtures.sql
+```
+
 ### Run tests
 There are functional tests to assure the correct working of the API.
 These tests are created with behat.
