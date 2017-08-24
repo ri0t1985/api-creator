@@ -3,10 +3,12 @@
 namespace App;
 
 use App\Controllers\DefaultController;
+use App\Controllers\RequestController;
 use App\Services\DatabaseServiceContainer;
 use App\Services\EndPointService;
 use App\Services\WebsiteService;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 class RoutesLoader
 {
@@ -41,6 +43,22 @@ class RoutesLoader
                 });
             }
         }
+
+
+        $api->post('/create',function(Request $request) use ($databaseServiceContainer){
+            $controller = new RequestController($databaseServiceContainer);
+            return $controller->create($request);
+        });
+
+        $api->post('/update/{id}',function(Request $request, $id) use ($databaseServiceContainer){
+            $controller = new RequestController($databaseServiceContainer);
+            return $controller->update($request, $id);
+        });
+
+        $api->post('/delete/{id}',function($id) use ($databaseServiceContainer){
+            $controller = new RequestController($databaseServiceContainer);
+            return $controller->create($id);
+        });
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
     }

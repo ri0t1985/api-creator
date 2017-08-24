@@ -16,4 +16,12 @@ class BaseService
         $this->db = $db;
     }
 
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->db->fetchColumn('SELECT uuid()');
+    }
+
 }
