@@ -14,18 +14,8 @@ Feature: Soccer
     date
     """
 
-  Scenario: List specific soccer match
-    When I request "GET http://localhost/api/v1/soccer/matches/1"
-    Then I get a "200" response
-    And the properties exist:
-    """
-    home_team
-    visiting_team
-    date
-    """
-
   Scenario: Search for matches
-    When I request "GET http://localhost/api/v1/soccer/matches/search/visiting_team/DSO 1"
+    When I request "GET http://localhost/api/v1/soccer/matches/search/date/29-aug"
     Then I get a "200" response
     And scope into the first property
     Then the properties exist:
@@ -34,3 +24,18 @@ Feature: Soccer
     visiting_team
     date
     """
+    And the "date" property equals "29-aug"
+    And the "home_team" property equals "VUC 1"
+    And the "match_start" property equals "20:00"
+
+  Scenario: Search for matches
+    When I request "GET http://localhost/api/v1/soccer/matches/search/visiting_team/DSO%201"
+    Then I get a "200" response
+    And scope into the first property
+    Then the properties exist:
+    """
+    home_team
+    visiting_team
+    date
+    """
+    And the "visiting_team" property equals "DSO 1"
