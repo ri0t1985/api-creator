@@ -66,7 +66,8 @@ class ApiContext implements Context
             ]
         ];
 
-        $this->client = new Client($config);
+        //$this->client = new Client($config);
+        $this->client = new Client();
     }
 
     /**
@@ -95,12 +96,20 @@ class ApiContext implements Context
                         ->client
                         ->$method($resource, ['body' => $post]);
                     break;
+
                 case 'POST':
                     $post = \GuzzleHttp\json_decode($this->requestPayload, true);
 
                     $this->response = $this
                         ->client
                         ->$method($resource, ['body' => $post]);
+                    break;
+
+                case 'GET':
+
+                    $this->response = $this
+                        ->client
+                        ->get($resource);
                     break;
 
                 default:
@@ -152,9 +161,9 @@ class ApiContext implements Context
             $bodyOutput = $response->getBody();
         }
 
-        if( $body = $response->getBody() ){
-            echo $body;
-        }
+//        if( $body = $response->getBody() ){
+//            echo $body;
+//        }
 
         assertSame(
             (int) $statusCode,
@@ -484,7 +493,7 @@ class ApiContext implements Context
     {
         $payload = $this->getResponsePayload();
 
-        if (! $this->scope) {
+        if ( is_null($this->scope) ) {
             return $payload;
         }
 
@@ -524,6 +533,14 @@ class ApiContext implements Context
         }
 
         return $array;
+    }
+
+    /**
+     * @Given /^scope into the first property$/
+     */
+    public function scopeIntoTheFirstProperty1()
+    {
+        $this->scope = "0";
     }
 
 

@@ -2,6 +2,7 @@ default:
   extensions:
     Behat\MinkExtension:
       goutte: ~
+      selenium2: ~
   suites:
     default:
       contexts:
@@ -9,4 +10,4 @@ default:
         - Behat\MinkExtension\Context\MinkContext
         - ApiContext:
             parameters:
-              base_url: http://localhost:80
+              base_url: http://127.0.0.1
