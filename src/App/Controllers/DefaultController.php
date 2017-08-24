@@ -83,7 +83,7 @@ class DefaultController
      */
     protected function parseHtml()
     {
-        $html = HtmlDomParser::file_get_html(__DIR__ . '/../../../web/src_website/index.html');
+        $html = HtmlDomParser::file_get_html(__DIR__ . '/../../../web/src_website/index.html', false, null, 0);
 
         foreach ($this->domSelectors as $selector => $alias) {
             foreach ($html->find($selector) as $key => $element) {
