@@ -1,0 +1,12 @@
+<?php
+// add your local settings here.
+
+$app['log.level'] = Monolog\Logger::DEBUG;
+
+$app['db.options'] = array(
+    "driver"   => "pdo_mysql",
+    "user"     => "root",
+    "password" => "root",
+    "dbname"   => "prod_db",
+    "host"     => "prod_host",
+);

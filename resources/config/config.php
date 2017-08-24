@@ -1,15 +1,25 @@
 <?php
 
-$app['api.version'] = "v1";
+$app['api.version']  = "v1";
 $app['api.endpoint'] = "/api";
+
+
+$app['log.level'] = Monolog\Logger::ERROR;
+
 
 /**
 * MySQL
 */
 $app['db.options'] = array(
-  "driver" => "pdo_mysql",
-  "user" => "root",
+  "driver"   => "pdo_mysql",
+  "user"     => "root",
   "password" => "root",
-  "dbname" => "prod_db",
-  "host" => "prod_host",
+  "dbname"   => "prod_db",
+  "host"     => "prod_host",
 );
+
+
+if (file_exists(__DIR__.'/config.local.php'))
+{
+    include(__DIR__.'/config.local.php');
+}
