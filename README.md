@@ -10,12 +10,35 @@ composer install
 ```
 
 ### Run webserver
+
+#### Using PHP's internal webserver
 Go inside the `web` directory and start PHP's internal webserver.
 
 ```bash
 cd web
 php -S 0.0.0.0:8000
 ````
+
+#### Using Docker
+Use the helper-script in the project-directory to spin up the Docker-container
+
+```bash
+./dev up
+```
+
+### Run tests
+There are functional tests to assure the correct working of the API.
+These tests are created with behat.
+
+Execute the tests with either the helper-script or with behat itself.
+```bash
+# use behat
+cd tests/behat
+../../vendor/bin/behat
+
+# OR use the helper script in the root of the project
+./dev test
+```
 
 ## Minimal Viable Product
 
