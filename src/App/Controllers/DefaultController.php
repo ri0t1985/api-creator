@@ -30,10 +30,16 @@ class DefaultController
             $this->parseHtml($selectors, $website['url']);
         }
 
+        if (false === is_array($this->returnValues))
+        {
+            return new JsonResponse('Unable to load any content', 400);
+        }
+
+
         $response = [];
         foreach ($this->returnValues as $valueArray)
         {
-            if (key_exists($key, $valueArray) && $valueArray[$key] === $value)
+            if (key_exists($key, $valueArray) && strstr($valueArray[$key], $value))
             {
                 $response[] = $valueArray;
             }
@@ -49,6 +55,11 @@ class DefaultController
         if (null === $this->returnValues)
         {
             $this->parseHtml($selectors, $website['url']);
+        }
+
+        if (false === is_array($this->returnValues))
+        {
+            return new JsonResponse('Unable to load any content', 400);
         }
 
         return new JsonResponse($this->returnValues, 200, ['Content-Type' => 'application/json']);
