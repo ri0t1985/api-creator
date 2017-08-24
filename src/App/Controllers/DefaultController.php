@@ -27,7 +27,7 @@ class DefaultController
 
         if (null === $this->returnValues)
         {
-            $this->parseHtml($selectors);
+            $this->parseHtml($selectors, $website['url']);
         }
 
         $response = [];
@@ -41,7 +41,7 @@ class DefaultController
 
         return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
     }
-//
+
     public function processEndPoint($website, $endpoint)
     {
         $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
@@ -74,7 +74,7 @@ class DefaultController
         }
 
         // Get the status code
-        $status = curl_getinfo($c, CURLINFO_HTTP_CODE);
+//        $status = curl_getinfo($c, CURLINFO_HTTP_CODE);
 
         curl_close($c);
 
