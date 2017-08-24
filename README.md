@@ -23,6 +23,10 @@ php -S 0.0.0.0:8000
 Use the helper-script in the project-directory to spin up the Docker-container
 
 ```bash
+# run docker-compose
+docker-compose -f docker-compose.dev.yml up
+
+# using the helper script in the root of the project
 ./dev up
 ```
 
