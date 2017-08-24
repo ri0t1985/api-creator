@@ -1,7 +1,8 @@
 {
     "require": {
         "silex/silex": "^2.2",
-        "sunra/php-simple-html-dom-parser": "^1.5"
+        "sunra/php-simple-html-dom-parser": "^1.5",
+        "illuminate/support": "^5.4"
     },
     "autoload": {
         "psr-0": {
@@ -11,6 +12,7 @@
     "require-dev": {
         "behat/mink-extension": "^2.2",
         "behat/mink-goutte-driver": "^1.2",
-        "phpunit/phpunit": "^6.3"
+        "phpunit/phpunit": "^6.3",
+        "behat/mink-selenium2-driver": "^1.3"
     }
 }
