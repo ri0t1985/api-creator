@@ -36,7 +36,6 @@ class RequestController
             $website['url']  = $request->get('website_url');
             $website['url_hash'] = md5($website['url']);
 
-
             $this->databaseServiceContainer->getWebsiteService()->save($website);
 
             foreach ($request->get('endpoints') as $end_point_request)
@@ -65,14 +64,12 @@ class RequestController
 
         }
 
-
         return new JsonResponse(['successfully created'], 200);
     }
 
 
     public function update(Request $request, $id)
     {
-
         $this->validateUpdateRequest($request);
         return new JsonResponse(['successfully updated call with id: '.$id], 200);
     }
