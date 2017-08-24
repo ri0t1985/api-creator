@@ -1,20 +1,26 @@
 version: "2"
 
 services:
-  app:
-    build: docker/app/
-    hostname: app
+#  app:
+#    build: docker/app/
+#    hostname: app
+#    volumes:
+#      - .:/var/www/html
+#    ports:
+#      - "80:80"
+#    environment:
+#      XDEBUG_HOST: ${XDEBUG_HOST}
+
+  php:
+    build: ./docker/php
     volumes:
       - .:/var/www/html
-    ports:
-      - "80:80"
     environment:
       XDEBUG_HOST: ${XDEBUG_HOST}
 
-#  db:
-#      image: mysql:5.6
-#      environment:
-#          MYSQL_ROOT_PASSWORD: root
-#          MYSQL_DATABASE: api
-#      ports:
-#        - "3306:3306"
+  nginx:
+    build: ./docker/nginx
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
