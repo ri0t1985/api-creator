@@ -46,7 +46,7 @@ php -S 0.0.0.0:8000
 * ☐ IT-landscape
 * ☐ understanding versioncontrol: github/gitlab/etc.
 
-* mentoring / coaching
-* pairprogramming
-* setup an API from scratch
-* gain further insights to develop an API from a website
+* ☐ mentoring / coaching
+* ☐ pairprogramming
+* ☐ setup an API from scratch
+* ☐ gain further insights to develop an API from a website
