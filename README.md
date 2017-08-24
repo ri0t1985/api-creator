@@ -19,29 +19,32 @@ php -S 0.0.0.0:8000
 
 ## Minimal Viable Product
 
-* put in URL
-* shows page (DOM0-elements)
-* use selectes elements with relevant data
-* data in element is retrievable via REST-call
+* ☒ API: retun static data
+* ☒ parsing data from HTML
+* ☐ make selectors dynamic: 
+  * ☐ create an API-endpoint to store new endpoints for an application
+  * ☐ get rid of hardcoded endpoints
+  * ☐ retrieve and process endpoints from storage
+* ☐ dynamic url: using the real websource instead of saved website-page
 
 ## Milestones
 
-* API with 1 endpoint which provides hardcoded data
-* Scrape data from website into storage
+☒ API with 1 endpoint which provides hardcoded data
+☒ Scrape data from website into storage
 * Visually select HTML-element from target-website which contains relevant data
 
 ## Minimal Viable Learning 
 
-* The coding-process
-* Pair/peer-programming
-* Understanding why doing decisions are made
-* How to debug an API
-* Kanban + / tasks / 
-* scrum
-* Agile - user stories with ...
-* Sync front- and back-end
-* IT-landscape
-* understanding versioncontrol: github/gitlab/etc.
+* ☐ The coding-process
+* ☐ Pair/peer-programming
+* ☐ Understanding why doing decisions are made
+* ☐ How to debug an API
+* ☐ Kanban + / tasks / 
+* ☐ scrum
+* ☐ Agile - user stories with ...
+* ☐ Sync front- and back-end
+* ☐ IT-landscape
+* ☐ understanding versioncontrol: github/gitlab/etc.
 
 * mentoring / coaching
 * pairprogramming
