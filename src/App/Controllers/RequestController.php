@@ -77,9 +77,35 @@ class RequestController
     public function delete($id)
     {
         $website = $this->databaseServiceContainer->getWebsiteService()->getOne($id);
+
         if (empty($website))
         {
             return new JsonResponse(['Resource not found with id: ' .$id], 404);
+        }
+        try
+        {
+            $this->databaseServiceContainer->getConnection()->beginTransaction();
+
+            $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteId($id);
+            foreach ($selectors as $selector)
+            {
+                $this->databaseServiceContainer->getSelectorService()->delete($selector['id']);
+            }
+
+            $endpoints = $this->databaseServiceContainer->getEndPointService()->getAllByWebsiteId($id);
+            foreach ($endpoints as $endpoint)
+            {
+                $this->databaseServiceContainer->getEndPointService()->delete($endpoint['id']);
+            }
+
+            $this->databaseServiceContainer->getWebsiteService()->delete($id);
+
+            $this->databaseServiceContainer->getConnection()->commit();
+        }
+        catch(\Exception $e)
+        {
+            $this->databaseServiceContainer->getConnection()->rollBack();
+            return new JsonResponse(['Failed to delete'], 500);
         }
 
         return new JsonResponse(['successfully deleted call with id: '.$id], 200);

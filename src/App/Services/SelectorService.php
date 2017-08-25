@@ -36,4 +36,8 @@ class SelectorService extends BaseService
         return $this->db->fetchAll("SELECT s.* FROM selectors s LEFT JOIN endpoints e ON (e.id = s.endpoint_id) WHERE website_id=:website_id AND endpoint_id=:endpoint_id ", ['website_id' => $websiteId, 'endpoint_id' => $endpointId]);
     }
 
+    public function getAllByWebsiteId($websiteId)
+    {
+        return $this->db->fetchAll("SELECT s.* FROM selectors s LEFT JOIN endpoints e ON (e.id = s.endpoint_id) WHERE website_id=:website_id",['website_id' => $websiteId]);
+    }
 }

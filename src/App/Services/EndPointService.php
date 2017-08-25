@@ -30,4 +30,9 @@ class EndPointService extends BaseService
     {
         return $this->db->delete("endpoints", array("id" => $id));
     }
+
+    public function getAllByWebsiteId($websiteId)
+    {
+        return $this->db->fetchAll('SELECT e.* FROM endpoints e WHERE website_id=:website_id',['website_id' => $websiteId]);
+    }
 }
