@@ -7,7 +7,7 @@ class WebsiteService extends BaseService
 
     public function getOne($id)
     {
-        return $this->db->fetchAssoc("SELECT * FROM websites WHERE id=?", [(int) $id]);
+        return $this->db->fetchAssoc("SELECT * FROM websites WHERE id=?", [$id]);
     }
 
     public function getAll()
