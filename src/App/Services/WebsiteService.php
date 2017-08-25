@@ -28,7 +28,7 @@ class WebsiteService extends BaseService
 
     function delete($id)
     {
-        return $this->db->delete("notes", array("id" => $id));
+        return $this->db->delete("websites", array("id" => $id));
     }
 
 }

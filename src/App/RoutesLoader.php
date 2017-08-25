@@ -57,7 +57,7 @@ class RoutesLoader
 
         $api->post('/delete/{id}',function($id) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
-            return $controller->create($id);
+            return $controller->delete($id);
         });
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
