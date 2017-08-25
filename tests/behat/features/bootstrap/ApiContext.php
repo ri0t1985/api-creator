@@ -449,8 +449,7 @@ class ApiContext implements Context
     {
         if (! $this->responsePayload) {
             $body = $this->getResponse()->getBody(true);
-            $json = json_decode($body);
-//            echo $body->getContents();
+            $json = json_decode($body, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $message = 'Failed to decode JSON body ';
@@ -518,6 +517,12 @@ class ApiContext implements Context
             return $array;
         }
 
+        // when you want the first element of the array (and there are no
+        // integer keys)
+        if( $key === 'first'){
+            return array_shift($array);
+        }
+
         foreach (explode('.', $key) as $segment) {
 
             if (is_object($array)) {
@@ -542,8 +547,6 @@ class ApiContext implements Context
      */
     public function scopeIntoTheFirstProperty1()
     {
-        $this->scope = "0";
+        $this->scope = 'first';
     }
-
-
 }

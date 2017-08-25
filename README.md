@@ -14,6 +14,8 @@ composer install
 #### Using PHP's internal webserver
 Go inside the `web` directory and start PHP's internal webserver.
 
+NOTE: this webserver is _single-threaded_ and is not for production!
+
 ```bash
 cd web
 php -S 0.0.0.0:8000
@@ -30,9 +32,14 @@ docker-compose -f docker-compose.dev.yml up
 ./dev up
 ```
 
+##### Change PHP-version
+If you want to change the PHP-version to work with, edit the file `docker-compose.dev.yml`.
+Comment out the line for the PHP-version you don't want and un-comment the line for
+the PHP-version you do want. Then start the Docker-containers with one of the commands above
+like `./dev up`.
+
 Then install the database (ignore the errors)
 ```bash
-./dev exec db mysqladmin -u root -proot create api
 ./dev exec db mysql -u root -proot api < resources/schema.sql
 ./dev exec db mysql -u root -proot api < resources/fixtures.sql
 ```

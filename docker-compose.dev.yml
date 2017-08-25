@@ -1,20 +1,11 @@
 version: "2"
 
 services:
-#  app:
-#    build: docker/app/
-#    hostname: app
-#    volumes:
-#      - .:/var/www/html
-#    ports:
-#      - "80:80"
-#    environment:
-#      XDEBUG_HOST: ${XDEBUG_HOST}
 
   php:
     # choose the version of PHP you want to work with
-    #build: ./docker/php70
-    build: ./docker/php71
+    build: ./docker/php70
+    #build: ./docker/php71
     volumes:
       - .:/var/www/html
     environment:
