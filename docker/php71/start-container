@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# place the IP-address of our host in xdebugs' config
+sed -i "s/xdebug\.remote_host\=.*/xdebug\.remote_host\=$XDEBUG_HOST/g" /etc/php/7.1/mods-available/xdebug.ini
+
+# start php-fpm
+php-fpm7.1

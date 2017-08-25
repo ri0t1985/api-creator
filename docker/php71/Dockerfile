@@ -15,7 +15,7 @@ RUN apt-get update \
     && add-apt-repository -y ppa:ondrej/php \
     && apt-get update \
     && apt-get install -y php7.1-fpm php7.1-cli php7.1-mcrypt php7.1-gd php7.1-mysql \
-       php7.1-pgsql php7.1-imap php-memcached php7.1-mbstring php7.1-xml php7.1-curl \
+       php7.1-pgsql php7.1-imap php-memcached php7.1-mbstring php7.1-xml php7.1-curl php7.1-xdebug \
     && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && mkdir /run/php \
     && apt-get remove -y --purge software-properties-common \
@@ -25,5 +25,10 @@ RUN apt-get update \
 ADD php-fpm.conf /etc/php/7.1/fpm/php-fpm.conf
 ADD www.conf /etc/php/7.1/fpm/pool.d/www.conf
 
+COPY xdebug.ini /etc/php/7.1/mods-available/xdebug.ini
+
+COPY start-container /usr/local/bin/start-container
+RUN chmod +x /usr/local/bin/start-container
+
 EXPOSE 9000
-CMD ["php-fpm7.1"]
+CMD ["start-container"]
