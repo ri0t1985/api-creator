@@ -73,11 +73,11 @@ cd tests/behat
 
 * ☒ API: retun static data
 * ☒ parsing data from HTML
-* ☐ make selectors dynamic: 
-  * ☐ create an API-endpoint to store new endpoints for an application
-  * ☐ get rid of hardcoded endpoints
-  * ☐ retrieve and process endpoints from storage
-* ☐ dynamic url: using the real websource instead of saved website-page
+* ☒ make selectors dynamic: 
+  * ☒ create an API-endpoint to store new endpoints for an application
+  * ☒ get rid of hardcoded endpoints
+  * ☒ retrieve and process endpoints from storage
+* ☒ dynamic url: using the real websource instead of saved website-page
 
 ## Milestones
 
@@ -87,26 +87,26 @@ cd tests/behat
 
 ## Minimal Viable Learning 
 
-* ☐ The coding-process
-* ☐ Pair/peer-programming
-* ☐ Understanding why doing decisions are made
-* ☐ How to debug an API
+* ☒ The coding-process
+* ☒ Pair/peer-programming
+* ☒ Understanding why doing decisions are made
+* ☒ How to debug an API
 * ☐ Kanban + / tasks / 
 * ☐ scrum
 * ☐ Agile - user stories with ...
 * ☐ Sync front- and back-end
-* ☐ IT-landscape
-* ☐ understanding versioncontrol: github/gitlab/etc.
+* ☒ IT-landscape
+* ☒ understanding versioncontrol: github/gitlab/etc.
 
-* ☐ mentoring / coaching
-* ☐ pairprogramming
-* ☐ setup an API from scratch
-* ☐ gain further insights to develop an API from a website
+* ☒ mentoring / coaching
+* ☒ pairprogramming
+* ☒ setup an API from scratch
+* ☒ gain further insights to develop an API from a website
 
 
 ## Usage
 
-###Create call
+### Create call
 
 In order to create a new call, specify the following data:
 - website name (will be used in the route)
@@ -118,20 +118,20 @@ In order to create a new call, specify the following data:
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
 ![Create call](web/images/usage_create_call.png)
  
-###List call
+### List call
 
 To call the data you created in the create call, simply use the website name and endpoint name in your url as such:
 <website_name>/<end_point_name>
 
 ![list call](web/images/usage_list_call.png) 
 
-###Search call
+### Search call
 You can search inside one of the specified keys for a certain value. It will also search for partial matches.
 To do this specify your route as such: <website_name>/<end_point>/search/<key>/<query>
 
 ![Search call](web/images/usage_search.png)
 
-###Delete call
+### Delete call
 
 To delete a call, simply call the following url: delete/<id>
 
