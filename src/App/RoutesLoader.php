@@ -61,7 +61,7 @@ class RoutesLoader
             return $controller->delete($id);
         });
 
-        $api->match('{url}', function($url){
+        $api->match('{url}', function(){
             return new JsonResponse(['The requested end point does not exit', 404]);
         })->assert('url', '.+');
 
