@@ -93,8 +93,34 @@ class DefaultController
 
         foreach ($domSelectors as $selector) {
             foreach ($html->find($selector['selector']) as $key => $element) {
-                $this->returnValues[$key][$selector['alias']] = trim(strip_tags((string)$element));
+
+                if (isset($element->src) && !empty($element->src))
+                {
+                    $src = trim(strip_tags((string)$element->src));
+
+                    $this->returnValues[$key][$selector['alias']] = $src; //$this->convertPathToExact($websiteUrl, $src);
+                }
+                else {
+                    $this->returnValues[$key][$selector['alias']] = trim(strip_tags((string)$element));
+                }
             }
         }
+    }
+
+    protected function convertPathToExact($websiteUrl, $path)
+    {
+        // check if src is relative
+        if (false === file_exists($path)) {
+            $exactUrl =  parse_url($websiteUrl, PHP_URL_SCHEME).'://'
+                . parse_url($websiteUrl, PHP_URL_HOST)
+                . $path;
+
+            if (false !== file_get_contents($exactUrl))
+            {
+                return $exactUrl;
+            }
+        }
+
+        return $path;
     }
 }
