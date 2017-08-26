@@ -44,6 +44,17 @@ Then install the database (ignore the errors)
 ./dev exec db mysql -u root -proot api < resources/fixtures.sql
 ```
 
+If you want to see the version of PHP you're currently using in the PHP-docker container,
+you can issue the following command:
+```bash
+./dev exec php php -v
+
+PHP 7.1.8-2+ubuntu16.04.1+deb.sury.org+4 (cli) (built: Aug  4 2017 13:04:12) ( NTS )
+Copyright (c) 1997-2017 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2017 Zend Technologies
+    with Zend OPcache v7.1.8-2+ubuntu16.04.1+deb.sury.org+4, Copyright (c) 1999-2017, by Zend Technologies
+    with Xdebug v2.5.5, Copyright (c) 2002-2017, by Derick Rethans
+```
 ### Run tests
 There are functional tests to assure the correct working of the API.
 These tests are created with behat.
