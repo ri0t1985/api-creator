@@ -8,6 +8,7 @@ use App\Services\DatabaseServiceContainer;
 use App\Services\EndPointService;
 use App\Services\WebsiteService;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class RoutesLoader
@@ -59,6 +60,10 @@ class RoutesLoader
             $controller = new RequestController($databaseServiceContainer);
             return $controller->delete($id);
         });
+
+        $api->match('{url}', function($url){
+            return new JsonResponse(['The requested end point does not exit', 404]);
+        })->assert('url', '.+');
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
     }
