@@ -21,3 +21,9 @@ We currently dont support the handling of properties, which can be a problem. Fo
 ## Error handling and validation
 Error handling needs to be improved, since SQL errors are returned through the JSON response in most cases. 
 Also, we dont validate a lot of things, like if the website already exists.
+
+- Support parsing options:
+The following come to mind:
+    - support whether or not to strip the HTML from the item
+    - support if a property should be called (img->src for instance)
+    - support to convert URLs to exact urls
