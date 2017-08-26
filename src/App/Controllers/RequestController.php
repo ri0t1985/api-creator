@@ -31,12 +31,16 @@ class RequestController
         $this->databaseServiceContainer->getConnection()->beginTransaction();
         try
         {
-            $website['id']   = $this->databaseServiceContainer->getWebsiteService()->getUuid();
-            $website['name'] = $request->get('website_name');
-            $website['url']  = $request->get('website_url');
-            $website['url_hash'] = md5($website['url']);
+            $website = $this->databaseServiceContainer->getWebsiteService()->getOneByName($request->get('website_name'));
 
-            $this->databaseServiceContainer->getWebsiteService()->save($website);
+            if (empty($website))
+            {
+                $website['id']   = $this->databaseServiceContainer->getWebsiteService()->getUuid();
+                $website['name'] = $request->get('website_name');
+                $website['url']  = $request->get('website_url');
+                $website['url_hash'] = md5($website['url']);
+                $this->databaseServiceContainer->getWebsiteService()->save($website);
+            }
 
             foreach ($request->get('endpoints') as $end_point_request)
             {
@@ -64,7 +68,7 @@ class RequestController
 
         }
 
-        return new JsonResponse(['successfully created'], 200);
+        return new JsonResponse(['successfully created call with ID: ' . $website['id']], 200);
     }
 
 
@@ -133,6 +137,14 @@ class RequestController
             if (empty($end_point_request['name']) && !is_string($end_point_request['string']))
             {
                 $errors['endpoints'][$key]['name'] = 'Cannot be empty and should be string!';
+            }
+
+            // TODO: verify if end point does not exist, just for a website. Not just for any website.
+            $end_point = $this->databaseServiceContainer->getEndPointService()->getOneByName($end_point_request['name']);
+            if (!empty($end_point))
+            {
+                $errors['endpoints'][$key]['selectors'] = 'End point already exists!';
+                continue;
             }
 
             if (empty($end_point_request['selectors']))

@@ -15,18 +15,18 @@ class SelectorService extends BaseService
         return $this->db->fetchAll("SELECT * FROM selectors");
     }
 
-    function save($note)
+    public function save($note)
     {
         $this->db->insert("selectors", $note);
         return $this->db->lastInsertId();
     }
 
-    function update($id, $selector)
+    public function update($id, $selector)
     {
         return $this->db->update('selectors', $selector, ['id' => $id]);
     }
 
-    function delete($id)
+    public function delete($id)
     {
         return $this->db->delete("selectors", array("id" => $id));
     }

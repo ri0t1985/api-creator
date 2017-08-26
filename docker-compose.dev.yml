@@ -4,8 +4,8 @@ services:
 
   php:
     # choose the version of PHP you want to work with
-    build: ./docker/php70
-    #build: ./docker/php71
+    #build: ./docker/php70
+    build: ./docker/php71
     volumes:
       - .:/var/www/html
     environment:

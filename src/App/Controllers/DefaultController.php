@@ -11,7 +11,6 @@ use Illuminate\Support\Collection;
 
 class DefaultController
 {
-
     /**
      * @var Collection $websiteApiData Contains the structured data which is scraped from the website
      */
@@ -113,10 +112,19 @@ class DefaultController
         $htmlSource = $this->getHtmlSource($website['url']);
 
         $html = HtmlDomParser::str_get_html($htmlSource);
+
         foreach ($selectors as $selector) {
             foreach ($html->find($selector['selector']) as $key => $element) {
-                $elementValue = trim(strip_tags((string)$element->innertext()));
-                $records[$key][$selector['alias']] = $elementValue;
+
+                if (isset($element->src) && !empty($element->src))
+                {
+                    $src = trim(strip_tags((string)$element->src));
+
+                    $records[$key][$selector['alias']] = $src;
+                }
+                else {
+                    $records[$key][$selector['alias']] = trim(strip_tags((string)$element));
+                }
             }
         }
 
@@ -150,5 +158,23 @@ class DefaultController
 
         // return the fetched HTML
         return $html;
+    }
+
+    protected function convertPathToExact($websiteUrl, $path)
+    {
+        // check if src is relative
+        if (false !== file_exists($path)) {
+            return $path;
+        }
+
+        $exactUrl =  parse_url($websiteUrl, PHP_URL_SCHEME).'://'
+            . parse_url($websiteUrl, PHP_URL_HOST)
+            . $path;
+
+        if (false !== file_get_contents($exactUrl))
+        {
+            return $exactUrl;
+        }
+
     }
 }
