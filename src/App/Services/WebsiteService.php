@@ -31,4 +31,8 @@ class WebsiteService extends BaseService
         return $this->db->delete("websites", array("id" => $id));
     }
 
+    public function getOneByName($websiteName)
+    {
+        return $this->db->fetchAssoc("SELECT * FROM websites WHERE name=?", [$websiteName]);
+    }
 }

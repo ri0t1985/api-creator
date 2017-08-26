@@ -30,6 +30,9 @@ class DatabaseServiceContainer
         return $this->selectorService;
     }
 
+    /**
+     * @return EndPointService
+     */
     public function getEndPointService()
     {
         return $this->endpointService;
