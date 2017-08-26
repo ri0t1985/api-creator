@@ -102,3 +102,39 @@ cd tests/behat
 * ☐ pairprogramming
 * ☐ setup an API from scratch
 * ☐ gain further insights to develop an API from a website
+
+
+## Usage
+
+###Create call
+
+In order to create a new call, specify the following data:
+- website name (will be used in the route)
+- website URL (will be used to scrape the information from)
+- (one or more) endpoint name (will be used in the url)
+- (one or more) selector. Should be a CSS selector to select the element(s) of the HTML source of the website you wish to be returned
+- (one or more) alias. This is the key which will be used to return the content of the above mentioned element
+
+On successful creation, an ID should be returned to you, which can be used to update or delete the call.
+![Create call](web/images/usage_create_call.png)
+ 
+###List call
+
+To call the data you created in the create call, simply use the website name and endpoint name in your url as such:
+<website_name>/<end_point_name>
+
+![list call](web/images/usage_list_call.png) 
+
+###Search call
+You can search inside one of the specified keys for a certain value. It will also search for partial matches.
+To do this specify your route as such: <website_name>/<end_point>/search/<key>/<query>
+
+![Search call](web/images/usage_search.png)
+
+###Delete call
+
+To delete a call, simply call the following url: delete/<id>
+
+The ID is returned upon creation.
+
+![Delete call](web/images/usage_delete_call.png)
