@@ -139,7 +139,8 @@ class RequestController
                 $errors['endpoints'][$key]['name'] = 'Cannot be empty and should be string!';
             }
 
-            $end_point = $this->databaseServiceContainer->getEndPointService()->getOneByName();
+            // TODO: verify if end point does not exist, just for a website. Not just for any website.
+            $end_point = $this->databaseServiceContainer->getEndPointService()->getOneByName($end_point_request['name']);
             if (!empty($end_point))
             {
                 $errors['endpoints'][$key]['selectors'] = 'End point already exists!';
