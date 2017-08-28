@@ -66,7 +66,7 @@ class RequestController
             return new JsonResponse(['An error occurred while handling your request: ' . $e->getMessage()], 200);
         }
 
-        return new JsonResponse(['successfully created call with ID: ' . $website['id']], 200);
+        return new JsonResponse(['successfully created route with name: ' . $website['name']] . '/' . $end_point['name'], 200);
     }
 
 
@@ -80,7 +80,7 @@ class RequestController
     public function update(Request $request, $id)
     {
         $this->validateUpdateRequest($request);
-        return new JsonResponse(['successfully updated call with id: ' . $id], 200);
+        return new JsonResponse(['successfully updated route with id: ' . $id], 200);
     }
 
     /**
@@ -103,6 +103,7 @@ class RequestController
         }
 
         try {
+            $this->databaseServiceContainer->getConnection()->beginTransaction();
 
             $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
             foreach ($selectors as $selector) {
@@ -120,10 +121,10 @@ class RequestController
             $this->databaseServiceContainer->getConnection()->commit();
         } catch (\Exception $e) {
             $this->databaseServiceContainer->getConnection()->rollBack();
-            return new JsonResponse(['Failed to delete'], 500);
+            return new JsonResponse(['Failed to delete route with name: '.$websiteName .'/' . $endpointName], 500);
         }
 
-        return new JsonResponse(['successfully deleted call with for route: ' . $websiteName . '/' . $endpointName], 200);
+        return new JsonResponse(['successfully deleted route with name: ' . $websiteName . '/' . $endpointName], 200);
     }
 
     /**

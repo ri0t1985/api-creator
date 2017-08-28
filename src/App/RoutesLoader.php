@@ -50,12 +50,12 @@ class RoutesLoader
             return $controller->create($request);
         });
 
-        $api->post('/update/{id}',function(Request $request, $id) use ($databaseServiceContainer){
+        $api->put('/update/{id}',function(Request $request, $id) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
             return $controller->update($request, $id);
         });
 
-        $api->post('/delete/{websiteName}/{endpointName}',function($websiteName, $endpointName) use ($databaseServiceContainer){
+        $api->delete('/delete/{websiteName}/{endpointName}',function($websiteName, $endpointName) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
             return $controller->delete($websiteName, $endpointName);
         });
