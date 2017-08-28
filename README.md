@@ -1,4 +1,4 @@
-# Team Michaelangelo
+# API creator
 
 ## Installation
 
@@ -69,41 +69,6 @@ cd tests/behat
 ./dev test
 ```
 
-## Minimal Viable Product
-
-* ☒ API: retun static data
-* ☒ parsing data from HTML
-* ☒ make selectors dynamic: 
-  * ☒ create an API-endpoint to store new endpoints for an application
-  * ☒ get rid of hardcoded endpoints
-  * ☒ retrieve and process endpoints from storage
-* ☒ dynamic url: using the real websource instead of saved website-page
-
-## Milestones
-
-☒ API with 1 endpoint which provides hardcoded data
-☒ Scrape data from website into storage
-* Visually select HTML-element from target-website which contains relevant data
-
-## Minimal Viable Learning 
-
-* ☒ The coding-process
-* ☒ Pair/peer-programming
-* ☒ Understanding why doing decisions are made
-* ☒ How to debug an API
-* ☐ Kanban + / tasks / 
-* ☐ scrum
-* ☐ Agile - user stories with ...
-* ☐ Sync front- and back-end
-* ☒ IT-landscape
-* ☒ understanding versioncontrol: github/gitlab/etc.
-
-* ☒ mentoring / coaching
-* ☒ pairprogramming
-* ☒ setup an API from scratch
-* ☒ gain further insights to develop an API from a website
-
-
 ## Usage
 
 ### Create call
@@ -133,8 +98,6 @@ To do this specify your route as such: <website_name>/<end_point>/search/<key>/<
 
 ### Delete call
 
-To delete a call, simply call the following url: delete/<id>
+To delete a call, simply call the following url: delete/<website_name>/<endpoint_name>
 
-The ID is returned upon creation.
-
-![Delete call](web/images/usage_delete_call.png)
+If no further endpoints exist on the website, the website will be deleted from the system as well.

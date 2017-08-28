@@ -4,7 +4,7 @@ namespace App\Services;
 
 class BaseService
 {
-    /** @var \Doctrine\DBAL\Connection  */
+    /** @var \Doctrine\DBAL\Connection */
     protected $db;
 
     /**
@@ -23,5 +23,4 @@ class BaseService
     {
         return $this->db->fetchColumn('SELECT uuid()');
     }
-
 }
