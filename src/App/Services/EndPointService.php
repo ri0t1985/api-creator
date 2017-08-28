@@ -2,42 +2,33 @@
 
 namespace App\Services;
 
+use App\Entities;
+
+/**
+ * Class EndPointService
+ * @package App\Services
+ *
+ * @method getAll() Entities\Endpoint[]
+ * @method getOne($id) Entities\Endpoint
+ */
 class EndPointService extends BaseService
 {
-
-    public function getOne($id)
-    {
-        return $this->db->fetchAssoc("SELECT * FROM endpoints WHERE id=?", [$id]);
-    }
-
-    public function getAll()
-    {
-        return $this->db->fetchAll("SELECT * FROM endpoints");
-    }
-
-    public function save($endpoints)
-    {
-        $this->db->insert("endpoints", $endpoints);
-        return $this->db->lastInsertId();
-    }
-
-    public function update($id, $endpoint)
-    {
-        return $this->db->update('endpoints', $endpoint, ['id' => $id]);
-    }
-
-    public function delete($id)
-    {
-        return $this->db->delete("endpoints", array("id" => $id));
-    }
-
-    public function getAllByWebsiteId($websiteId)
-    {
-        return $this->db->fetchAll('SELECT e.* FROM endpoints e WHERE website_id=:website_id',['website_id' => $websiteId]);
-    }
-
+    /**
+     * @param string $name
+     * @return Entities\Endpoint
+     */
     public function getOneByName($name)
     {
-        return $this->db->fetchAssoc("SELECT * FROM endpoints WHERE name=?", [$name]);
+        return $this->getRepository()->findOneBy(['name' => $name]);
+    }
+
+    /**
+     * Returns the repository for the Endpoint entity.
+     *
+     * @return \Doctrine\ORM\EntityRepository
+     */
+    protected function getRepository()
+    {
+        return $this->entityManager->getRepository(Entities\Endpoint::class);
     }
 }

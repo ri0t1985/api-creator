@@ -2,37 +2,32 @@
 
 namespace App\Services;
 
+use App\Entities;
+
+/**
+ * Class WebsiteService
+ * @package App\Services
+ *
+ * @method Entities\Website[] getAll()
+ * @method Entities\Website getOne($id)
+ */
 class WebsiteService extends BaseService
 {
 
-    public function getOne($id)
-    {
-        return $this->db->fetchAssoc("SELECT * FROM websites WHERE id=?", [$id]);
-    }
-
-    public function getAll()
-    {
-        return $this->db->fetchAll("SELECT * FROM websites");
-    }
-
-    function save($website)
-    {
-        $this->db->insert("websites", $website);
-        return $this->db->lastInsertId();
-    }
-
-    function update($id, $website)
-    {
-        return $this->db->update('websites', $website, ['id' => $id]);
-    }
-
-    function delete($id)
-    {
-        return $this->db->delete("websites", array("id" => $id));
-    }
-
+    /**
+     * @param string $websiteName
+     * @return Entities\Website|object
+     */
     public function getOneByName($websiteName)
     {
-        return $this->db->fetchAssoc("SELECT * FROM websites WHERE name=?", [$websiteName]);
+        return $this->getRepository()->findOneBy(['name' => $websiteName]);
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityRepository
+     */
+    public function getRepository()
+    {
+        return $this->entityManager->getRepository(Entities\Website::class);
     }
 }

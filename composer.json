@@ -4,7 +4,8 @@
         "sunra/php-simple-html-dom-parser": "^1.5",
         "doctrine/dbal": "^2.5",
         "monolog/monolog": "^1.23",
-        "illuminate/support": "^5.4"
+        "illuminate/support": "^5.4",
+        "doctrine/orm": "^2.5"
     },
     "autoload": {
         "psr-0": {

@@ -5,8 +5,6 @@ namespace App;
 use App\Controllers\DefaultController;
 use App\Controllers\RequestController;
 use App\Services\DatabaseServiceContainer;
-use App\Services\EndPointService;
-use App\Services\WebsiteService;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,11 +13,18 @@ class RoutesLoader
 {
     private $app;
 
+    /**
+     * RoutesLoader constructor.
+     * @param Application $app
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
     }
 
+    /**
+     * Binds the routes to the controller
+     */
     public function bindRoutesToControllers()
     {
         /** @var DatabaseServiceContainer $databaseServiceContainer */
@@ -30,35 +35,34 @@ class RoutesLoader
 
         foreach ($websites as $website)
         {
-            $endpoints = $databaseServiceContainer->getEndPointService()->getAll();
+            $endpoints = $website->getEndpoints();
             foreach ($endpoints as $endpoint)
             {
-                $api->get('/'.$website['name'].'/'.$endpoint['name'], function () use ($databaseServiceContainer, $website, $endpoint) {
+                $api->get('/'.$website->getName().'/'.$endpoint->getName(), function () use ($databaseServiceContainer, $website, $endpoint) {
                     $controller = new DefaultController($databaseServiceContainer);
                     return $controller->processEndPoint($website, $endpoint);
                 });
 
-                $api->get('/'.$website['name'].'/'.$endpoint['name'].'/search/{key}/{value}', function ($key, $value) use ($databaseServiceContainer, $website, $endpoint) {
+                $api->get('/'.$website->getName().'/'.$endpoint->getName().'/search/{key}/{value}', function ($key, $value) use ($databaseServiceContainer, $website, $endpoint) {
                     $controller = new DefaultController($databaseServiceContainer);
                     return $controller->search($website, $endpoint, $key, $value);
                 });
             }
         }
 
-
         $api->post('/create',function(Request $request) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
             return $controller->create($request);
         });
 
-        $api->post('/update/{id}',function(Request $request, $id) use ($databaseServiceContainer){
+        $api->put('/update/{id}',function(Request $request, $id) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
             return $controller->update($request, $id);
         });
 
-        $api->post('/delete/{id}',function($id) use ($databaseServiceContainer){
+        $api->delete('/delete/{websiteName}/{endpointName}',function($websiteName, $endpointName) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
-            return $controller->delete($id);
+            return $controller->delete($websiteName, $endpointName);
         });
 
         $api->match('{url}', function(){

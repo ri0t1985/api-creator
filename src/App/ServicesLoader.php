@@ -16,7 +16,7 @@ class ServicesLoader
     public function bindServicesIntoContainer()
     {
         $this->app['database.service_container'] = function() {
-            return new Services\DatabaseServiceContainer($this->app["db"]);
+            return new Services\DatabaseServiceContainer($this->app["entity.manager"]);
         };
     }
 }

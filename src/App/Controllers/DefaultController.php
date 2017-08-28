@@ -2,125 +2,161 @@
 
 namespace App\Controllers;
 
+use App\Entities\Endpoint;
+use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
-use App\Services\WebsiteService;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Support\Collection;
 
-
+/**
+ * Class DefaultController. Used to handle the user created API routes, and scrape the HTML
+ * @package App\Controllers
+ */
 class DefaultController
 {
+    /**
+     * @var Collection $websiteApiData Contains the structured data which is scraped from the website
+     */
+    protected $websiteApiData;
 
-    protected $returnValues;
-
-    /** @var WebsiteService  */
+    /** @var DatabaseServiceContainer  */
     protected $databaseServiceContainer;
 
+    /**
+     * DefaultController constructor.
+     * @param DatabaseServiceContainer $databaseServiceContainer
+     */
     public function __construct(DatabaseServiceContainer $databaseServiceContainer)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
-    }
 
-    public function search($website, $endpoint, $key, $value)
-    {
-        $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
-
-        if (null === $this->returnValues)
-        {
-            $this->parseHtml($selectors, $website['url']);
-        }
-
-        if (false === is_array($this->returnValues))
-        {
-            return new JsonResponse('Unable to load any content', 400);
-        }
-
-
-        $response = [];
-        foreach ($this->returnValues as $valueArray)
-        {
-            if (key_exists($key, $valueArray) && strstr($valueArray[$key], $value))
-            {
-                $response[] = $valueArray;
-            }
-        }
-
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
-    }
-
-    public function processEndPoint($website, $endpoint)
-    {
-        $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
-
-        if (null === $this->returnValues)
-        {
-            $this->parseHtml($selectors, $website['url']);
-        }
-
-        if (false === is_array($this->returnValues))
-        {
-            return new JsonResponse('Unable to load any content', 400);
-        }
-
-        return new JsonResponse($this->returnValues, 200, ['Content-Type' => 'application/json']);
+        // create collection so we can use _very_ helpful methods to process the data in it
+        // see: https://laravel.com/docs/5.4/collections
+        $this->websiteApiData = collect();
     }
 
     /**
-     * Parses the HTML into a dom document, and processes all the dom selectors.
-     * @param $domSelectors
-     * @param $websiteUrl
-     * @throws \Exception
-     * @internal param $ [] $domSelectors
+     * Search the fetched API-data for specific properties with specific values
+     *
+     * @param $website      Website    The website element that is used
+     * @param $endpoint     Endpoint   The endpoint that is used
+     * @param $propertyName string     Part of the searchquery: The name of the property on which you want to search for
+     * @param $searchValue  string     Part of the searchquery: The value for $propertyName to search for
+     * @return JsonResponse
      */
-    protected function parseHtml($domSelectors, $websiteUrl)
+    public function search(Website $website, Endpoint $endpoint, string $propertyName, string $searchValue) : JsonResponse
     {
-        $c = curl_init($websiteUrl);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+        // Get the structured data from the website
+        $websiteApiData =  $this->getWebsiteApiData($website, $endpoint);
 
-        $html = curl_exec($c);
+        // get all responses from the fetched API-data which contain properties with the value we search for
+        $searchResults = $websiteApiData->filter(function($searchResultRecord) use ($propertyName, $searchValue) {
+            $propertyValue = collect($searchResultRecord)->get($propertyName, '');
+            $searchPropertyHasSearchedValue = (false !== stristr($propertyValue, $searchValue));
 
-        if (curl_error($c))
-        {
-            throw new \Exception(curl_error($c));
+            return $searchPropertyHasSearchedValue;
+        });
+
+        return new JsonResponse(
+            $searchResults->toArray(),
+            200,
+            ['Content-Type' => 'application/json']
+        );
+    }
+
+    /**
+     * Get the structured data from a website
+     *
+     * @param Website $website
+     * @param Endpoint $endpoint
+     * @return Collection
+     */
+    protected function getWebsiteApiData(Website $website, Endpoint $endpoint) : Collection
+    {
+        // only fetch websitedata when it's not done yet
+        if ( $this->websiteApiData->isEmpty() ){
+            $this->parseHtml($website, $endpoint);
         }
 
-        // Get the status code
-//        $status = curl_getinfo($c, CURLINFO_HTTP_CODE);
+        return $this->websiteApiData;
+    }
 
-        curl_close($c);
+    /**
+     *
+     * @param $website
+     * @param $endpoint
+     * @return JsonResponse
+     */
+    public function processEndPoint(Website $website, Endpoint $endpoint) : JsonResponse
+    {
+        $websiteApiData =  $this->getWebsiteApiData($website, $endpoint);
 
-        $html = HtmlDomParser::str_get_html($html);
+        return new JsonResponse($websiteApiData->toArray(), 200, ['Content-Type' => 'application/json']);
+    }
 
-        foreach ($domSelectors as $selector) {
-            foreach ($html->find($selector['selector']) as $key => $element) {
+    /**
+     * Get the HTML from the website and use the selectors for selecting the relevant data.
+     * It then takes this data and saves it as a structured array inside $this->websiteApiData
+     *
+     * @param Website $website
+     * @param Endpoint $endpoint
+     */
+    protected function parseHtml(Website $website, Endpoint $endpoint)
+    {
+        // get the selectors with which we will be able to point out
+        // relevant data on the target website
+        $selectors = $endpoint->getSelectors();
+
+        $htmlSource = $this->getHtmlSource($website->getUrl());
+
+        $html = HtmlDomParser::str_get_html($htmlSource);
+
+        $records = [];
+        foreach ($selectors as $selector) {
+            foreach ($html->find($selector->getSelector()) as $key => $element) {
 
                 if (isset($element->src) && !empty($element->src))
                 {
                     $src = trim(strip_tags((string)$element->src));
 
-                    $this->returnValues[$key][$selector['alias']] = $src; //$this->convertPathToExact($websiteUrl, $src);
+                    $records[$key][$selector->getAlias()] = $src;
                 }
                 else {
-                    $this->returnValues[$key][$selector['alias']] = trim(strip_tags((string)$element));
+                    $records[$key][$selector->getAlias()] = trim(strip_tags((string)$element));
                 }
             }
         }
+
+        $this->websiteApiData = collect($records);
     }
 
-    protected function convertPathToExact($websiteUrl, $path)
+    /**
+     * Connect to the website by URL and fetch the HTML-source
+     *
+     * @param $url  string  The URL of the website of which to get the HTML-source for
+     * @return string
+     * @throws \Exception
+     */
+    protected function getHtmlSource(string $url) : string
     {
-        // check if src is relative
-        if (false === file_exists($path)) {
-            $exactUrl =  parse_url($websiteUrl, PHP_URL_SCHEME).'://'
-                . parse_url($websiteUrl, PHP_URL_HOST)
-                . $path;
+        // initiate by telling curl which website it needs to act on
+        $c = curl_init($url);
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 
-            if (false !== file_get_contents($exactUrl))
-            {
-                return $exactUrl;
-            }
+        // execute the fetching
+        $html = curl_exec($c);
+
+        // when there is an error during the execution, stop everything
+        if (curl_error($c))
+        {
+            throw new \Exception(curl_error($c));
         }
 
-        return $path;
+        // nothing went wrong, so nicely close the connection
+        curl_close($c);
+
+        // return the fetched HTML
+        return $html;
     }
 }
