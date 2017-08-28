@@ -133,8 +133,6 @@ To do this specify your route as such: <website_name>/<end_point>/search/<key>/<
 
 ### Delete call
 
-To delete a call, simply call the following url: delete/<id>
+To delete a call, simply call the following url: delete/<website_name>/<endpoint_name>
 
-The ID is returned upon creation.
-
-![Delete call](web/images/usage_delete_call.png)
+If no further endpoints exist on the website, the website will be deleted from the system as well.

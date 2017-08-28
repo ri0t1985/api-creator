@@ -95,10 +95,8 @@ class DefaultController
      * Get the HTML from the website and use the selectors for selecting the relevant data.
      * It then takes this data and saves it as a structured array inside $this->websiteApiData
      *
-     * @param $domSelectors array   Collection domSelectors
-     * @param $websiteUrl   string  The url of the website which is going to be 'scraped'
-     * @throws \Exception
-     * @internal param $ [] $domSelectors
+     * @param array $website
+     * @param array $endpoint
      */
     protected function parseHtml(array $website, array $endpoint)
     {
@@ -113,6 +111,7 @@ class DefaultController
 
         $html = HtmlDomParser::str_get_html($htmlSource);
 
+        $records = [];
         foreach ($selectors as $selector) {
             foreach ($html->find($selector['selector']) as $key => $element) {
 
@@ -158,23 +157,5 @@ class DefaultController
 
         // return the fetched HTML
         return $html;
-    }
-
-    protected function convertPathToExact($websiteUrl, $path)
-    {
-        // check if src is relative
-        if (false !== file_exists($path)) {
-            return $path;
-        }
-
-        $exactUrl =  parse_url($websiteUrl, PHP_URL_SCHEME).'://'
-            . parse_url($websiteUrl, PHP_URL_HOST)
-            . $path;
-
-        if (false !== file_get_contents($exactUrl))
-        {
-            return $exactUrl;
-        }
-
     }
 }

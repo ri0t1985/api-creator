@@ -12,6 +12,7 @@ class DatabaseServiceContainer
     protected $websiteService;
 
     protected $connection;
+
     public function __construct(\Doctrine\DBAL\Connection $db)
     {
         $this->connection = $db;
@@ -20,11 +21,17 @@ class DatabaseServiceContainer
         $this->websiteService  = new WebsiteService($db);
     }
 
+    /**
+     * @return WebsiteService
+     */
     public function getWebsiteService()
     {
         return $this->websiteService;
     }
 
+    /**
+     * @return SelectorService
+     */
     public function getSelectorService()
     {
         return $this->selectorService;
@@ -38,6 +45,9 @@ class DatabaseServiceContainer
         return $this->endpointService;
     }
 
+    /**
+     * @return \Doctrine\DBAL\Connection
+     */
     public function getConnection()
     {
         return $this->connection;

@@ -15,18 +15,18 @@ class WebsiteService extends BaseService
         return $this->db->fetchAll("SELECT * FROM websites");
     }
 
-    function save($website)
+    public function save($website)
     {
         $this->db->insert("websites", $website);
         return $this->db->lastInsertId();
     }
 
-    function update($id, $website)
+    public function update($id, $website)
     {
         return $this->db->update('websites', $website, ['id' => $id]);
     }
 
-    function delete($id)
+    public function delete($id)
     {
         return $this->db->delete("websites", array("id" => $id));
     }

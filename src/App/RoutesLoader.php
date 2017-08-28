@@ -45,7 +45,6 @@ class RoutesLoader
             }
         }
 
-
         $api->post('/create',function(Request $request) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
             return $controller->create($request);
@@ -56,9 +55,9 @@ class RoutesLoader
             return $controller->update($request, $id);
         });
 
-        $api->post('/delete/{id}',function($id) use ($databaseServiceContainer){
+        $api->post('/delete/{websiteName}/{endpointName}',function($websiteName, $endpointName) use ($databaseServiceContainer){
             $controller = new RequestController($databaseServiceContainer);
-            return $controller->delete($id);
+            return $controller->delete($websiteName, $endpointName);
         });
 
         $api->match('{url}', function(){

@@ -5,6 +5,10 @@ namespace App\Services;
 class EndPointService extends BaseService
 {
 
+    /**
+     * @param string $id uuid
+     * @return array
+     */
     public function getOne($id)
     {
         return $this->db->fetchAssoc("SELECT * FROM endpoints WHERE id=?", [$id]);
