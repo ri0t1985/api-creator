@@ -2,25 +2,41 @@
 
 namespace App\Services;
 
-class BaseService
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+
+abstract class BaseService
 {
-    /** @var \Doctrine\DBAL\Connection */
-    protected $db;
+    /** @var EntityManager */
+    protected $entityManager;
 
     /**
      * BaseService constructor.
-     * @param \Doctrine\DBAL\Connection $db
+     * @param EntityManager $entityManager
      */
-    public function __construct($db)
+    public function __construct($entityManager)
     {
-        $this->db = $db;
+        $this->entityManager = $entityManager;
     }
 
-    /**
-     * @return string
-     */
-    public function getUuid()
+    /** @return EntityRepository */
+    abstract protected function getRepository();
+    //
+//    /**
+//     * @return string
+//     */
+//    public function getUuid()
+//    {
+//        return $this->db->fetchColumn('SELECT uuid()');
+//    }
+
+    public function getOne($id)
     {
-        return $this->db->fetchColumn('SELECT uuid()');
+        return $this->getRepository()->find($id);
+    }
+
+    public function getAll()
+    {
+        return $this->getRepository()->findAll();
     }
 }

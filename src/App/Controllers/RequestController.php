@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
 use App\Services\WebsiteService;
 use Symfony\Component\HttpFoundation\JsonResponse;

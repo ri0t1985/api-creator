@@ -30,15 +30,15 @@ class RoutesLoader
 
         foreach ($websites as $website)
         {
-            $endpoints = $databaseServiceContainer->getEndPointService()->getAll();
+            $endpoints = $website->getEndPoints();
             foreach ($endpoints as $endpoint)
             {
-                $api->get('/'.$website['name'].'/'.$endpoint['name'], function () use ($databaseServiceContainer, $website, $endpoint) {
+                $api->get('/'.$website->getName().'/'.$endpoint->getName(), function () use ($databaseServiceContainer, $website, $endpoint) {
                     $controller = new DefaultController($databaseServiceContainer);
                     return $controller->processEndPoint($website, $endpoint);
                 });
 
-                $api->get('/'.$website['name'].'/'.$endpoint['name'].'/search/{key}/{value}', function ($key, $value) use ($databaseServiceContainer, $website, $endpoint) {
+                $api->get('/'.$website->getName().'/'.$endpoint->getName().'/search/{key}/{value}', function ($key, $value) use ($databaseServiceContainer, $website, $endpoint) {
                     $controller = new DefaultController($databaseServiceContainer);
                     return $controller->search($website, $endpoint, $key, $value);
                 });

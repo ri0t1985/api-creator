@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Doctrine\ORM\EntityManager;
+
 class DatabaseServiceContainer
 {
     /** @var EndPointService  */
@@ -10,15 +12,20 @@ class DatabaseServiceContainer
     protected $selectorService;
     /** @var WebsiteService  */
     protected $websiteService;
+    /** @var EntityManager */
+    protected $entityManager;
 
-    protected $connection;
-
-    public function __construct(\Doctrine\DBAL\Connection $db)
+    /**
+     * DatabaseServiceContainer constructor.
+     * @param EntityManager $entityManager
+     */
+    public function __construct(EntityManager $entityManager)
     {
-        $this->connection = $db;
-        $this->endpointService = new EndPointService($db);
-        $this->selectorService = new SelectorService($db);
-        $this->websiteService  = new WebsiteService($db);
+        $this->entityManager = $entityManager;
+
+        $this->endpointService = new EndPointService($entityManager);
+        $this->selectorService = new SelectorService($entityManager);
+        $this->websiteService  = new WebsiteService($entityManager);
     }
 
     /**
@@ -50,6 +57,6 @@ class DatabaseServiceContainer
      */
     public function getConnection()
     {
-        return $this->connection;
+        return $this->entityManager->getConnection();
     }
 }

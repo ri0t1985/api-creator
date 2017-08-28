@@ -2,8 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Entities\Endpoint;
+use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
-use App\Services\WebsiteService;
+use App\Services\EndPointService;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Support\Collection;
@@ -16,7 +18,7 @@ class DefaultController
      */
     protected $websiteApiData;
 
-    /** @var WebsiteService  */
+    /** @var DatabaseServiceContainer  */
     protected $databaseServiceContainer;
 
     /**
@@ -35,13 +37,13 @@ class DefaultController
     /**
      * Search the fetched API-data for specific properties with specific values
      *
-     * @param $website     array    Information about the website with at least the (db) id as element
-     * @param $endpoint     array   Information about the endpoint with at least the (db) id as element
-     * @param $propertyName string  Part of the searchquery: The name of the property on which you want to search for
-     * @param $searchValue  string  Part of the searchquery: The value for $propertyName to search for
+     * @param $website      Website    The website element that is used
+     * @param $endpoint     Endpoint   The endpoint that is used
+     * @param $propertyName string     Part of the searchquery: The name of the property on which you want to search for
+     * @param $searchValue  string     Part of the searchquery: The value for $propertyName to search for
      * @return JsonResponse
      */
-    public function search(array $website, array $endpoint, string $propertyName, string $searchValue) : JsonResponse
+    public function search(Website $website, Endpoint $endpoint, string $propertyName, string $searchValue) : JsonResponse
     {
         // Get the structured data from the website
         $websiteApiData =  $this->getWebsiteApiData($website, $endpoint);
@@ -64,11 +66,11 @@ class DefaultController
     /**
      * Get the structured data from a website
      *
-     * @param array $website
-     * @param array $endpoint
+     * @param Website $website
+     * @param Endpoint $endpoint
      * @return Collection
      */
-    protected function getWebsiteApiData(array $website, array $endpoint) : Collection
+    protected function getWebsiteApiData(Website $website, Endpoint $endpoint) : Collection
     {
         // only fetch websitedata when it's not done yet
         if ( $this->websiteApiData->isEmpty() ){
@@ -84,7 +86,7 @@ class DefaultController
      * @param $endpoint
      * @return JsonResponse
      */
-    public function processEndPoint(array $website, array $endpoint) : JsonResponse
+    public function processEndPoint(Website $website, Endpoint $endpoint) : JsonResponse
     {
         $websiteApiData =  $this->getWebsiteApiData($website, $endpoint);
 
@@ -95,34 +97,31 @@ class DefaultController
      * Get the HTML from the website and use the selectors for selecting the relevant data.
      * It then takes this data and saves it as a structured array inside $this->websiteApiData
      *
-     * @param array $website
-     * @param array $endpoint
+     * @param Website $website
+     * @param Endpoint $endpoint
      */
-    protected function parseHtml(array $website, array $endpoint)
+    protected function parseHtml(Website $website, Endpoint $endpoint)
     {
         // get the selectors with which we will be able to point out
         // relevant data on the target website
-        $selectors = $this
-            ->databaseServiceContainer
-            ->getSelectorService()
-            ->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
+        $selectors = $endpoint->getSelectors();
 
-        $htmlSource = $this->getHtmlSource($website['url']);
+        $htmlSource = $this->getHtmlSource($website->getUrl());
 
         $html = HtmlDomParser::str_get_html($htmlSource);
 
         $records = [];
         foreach ($selectors as $selector) {
-            foreach ($html->find($selector['selector']) as $key => $element) {
+            foreach ($html->find($selector->getSelector()) as $key => $element) {
 
                 if (isset($element->src) && !empty($element->src))
                 {
                     $src = trim(strip_tags((string)$element->src));
 
-                    $records[$key][$selector['alias']] = $src;
+                    $records[$key][$selector->getAlias()] = $src;
                 }
                 else {
-                    $records[$key][$selector['alias']] = trim(strip_tags((string)$element));
+                    $records[$key][$selector->getAlias()] = trim(strip_tags((string)$element));
                 }
             }
         }
