@@ -9,7 +9,10 @@ use App\Services\DatabaseServiceContainer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-
+/**
+ * Class RequestController. Used to
+ * @package App\Controllers
+ */
 class RequestController
 {
 

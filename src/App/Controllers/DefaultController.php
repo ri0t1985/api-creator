@@ -5,12 +5,14 @@ namespace App\Controllers;
 use App\Entities\Endpoint;
 use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
-use App\Services\EndPointService;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Support\Collection;
 
-
+/**
+ * Class DefaultController. Used to handle the user created API routes, and scrape the HTML
+ * @package App\Controllers
+ */
 class DefaultController
 {
     /**

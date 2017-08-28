@@ -1,12 +1,7 @@
-Being a project which was setup for a short 4 days, it's only logical to have 
+# TODO
+
+Being a project which was setup in a short 4 days, it's only logical to have 
 a lot of wishes for features to come.
-
-## User authentication.
-- Delete route by name, not by ID
-Currently we delete the route by id, and that also results in any other endpoints on that website being deleted
-
-- Implement a proper entity manager
-No silly assoc stuffs. bah. humbug
 
 ## User authentication.
 We currently dont have support for user authentication, so the API is always publicly accessible, and we cant apply rate limiting.
@@ -28,6 +23,7 @@ The following come to mind:
     - support whether or not to strip the HTML from the item
     - support if a property should be called (img->src for instance)
     - support to convert URLs to exact urls
+    - support property instead of content
     
 ## Implement Tiny proxy to prevent blacklisting
 Support for several proxy servers.

@@ -5,8 +5,6 @@ namespace App;
 use App\Controllers\DefaultController;
 use App\Controllers\RequestController;
 use App\Services\DatabaseServiceContainer;
-use App\Services\EndPointService;
-use App\Services\WebsiteService;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,11 +13,18 @@ class RoutesLoader
 {
     private $app;
 
+    /**
+     * RoutesLoader constructor.
+     * @param Application $app
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
     }
 
+    /**
+     * Binds the routes to the controller
+     */
     public function bindRoutesToControllers()
     {
         /** @var DatabaseServiceContainer $databaseServiceContainer */

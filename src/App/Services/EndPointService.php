@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Doctrine\ORM\EntityManager;
 use App\Entities;
 
 /**
@@ -23,6 +22,11 @@ class EndPointService extends BaseService
         return $this->getRepository()->findOneBy(['name' => $name]);
     }
 
+    /**
+     * Returns the repository for the Endpoint entity.
+     *
+     * @return \Doctrine\ORM\EntityRepository
+     */
     protected function getRepository()
     {
         return $this->entityManager->getRepository(Entities\Endpoint::class);
