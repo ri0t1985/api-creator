@@ -30,7 +30,7 @@ class RoutesLoader
 
         foreach ($websites as $website)
         {
-            $endpoints = $website->getEndPoints();
+            $endpoints = $website->getEndpoints();
             foreach ($endpoints as $endpoint)
             {
                 $api->get('/'.$website->getName().'/'.$endpoint->getName(), function () use ($databaseServiceContainer, $website, $endpoint) {

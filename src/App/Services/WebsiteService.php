@@ -13,28 +13,20 @@ use App\Entities;
  */
 class WebsiteService extends BaseService
 {
-//    public function save($website)
-//    {
-//        $this->db->insert("websites", $website);
-//        return $this->db->lastInsertId();
-//    }
 
-//    public function update($id, $website)
-//    {
-//        return $this->db->update('websites', $website, ['id' => $id]);
-//    }
-//
-//    public function delete($id)
-//    {
-//        return $this->db->delete("websites", array("id" => $id));
-//    }
-//
-//    public function getOneByName($websiteName)
-//    {
-//        return $this->db->fetchAssoc("SELECT * FROM websites WHERE name=?", [$websiteName]);
-//    }
+    /**
+     * @param string $websiteName
+     * @return Entities\Website|object
+     */
+    public function getOneByName($websiteName)
+    {
+        return $this->getRepository()->findOneBy(['name' => $websiteName]);
+    }
 
-    protected function getRepository()
+    /**
+     * @return \Doctrine\ORM\EntityRepository
+     */
+    public function getRepository()
     {
         return $this->entityManager->getRepository(Entities\Website::class);
     }

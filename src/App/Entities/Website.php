@@ -39,7 +39,7 @@ class Website
      * @JoinColumn(name="id", referencedColumnName="endpoint_id")
      * @var Endpoint[]
      **/
-    protected $endPoints;
+    protected $endpoints;
 
     /**
      * @return string
@@ -59,10 +59,12 @@ class Website
 
     /**
      * @param string $name
+     * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
@@ -75,10 +77,12 @@ class Website
 
     /**
      * @param string $url
+     * @return $this
      */
     public function setUrl(string $url)
     {
         $this->url = $url;
+        return $this;
     }
 
     /**
@@ -91,25 +95,20 @@ class Website
 
     /**
      * @param string $urlHash
+     * @return $this
      */
     public function setUrlHash(string $urlHash)
     {
         $this->urlHash = $urlHash;
+        return $this;
+
     }
 
     /**
      * @return Endpoint[]
      */
-    public function getEndPoints()
+    public function getEndpoints()
     {
-        return $this->endPoints;
-    }
-
-    /**
-     * @param Endpoint[] $endPoints
-     */
-    public function setEndPoints(array $endPoints)
-    {
-        $this->endPoints = $endPoints;
+        return $this->endpoints;
     }
 }

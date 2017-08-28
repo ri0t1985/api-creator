@@ -2,9 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Entities\Endpoint;
+use App\Entities\Selector;
 use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
-use App\Services\WebsiteService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,9 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 class RequestController
 {
 
-    /** @var WebsiteService */
+    /** @var DatabaseServiceContainer */
     protected $databaseServiceContainer;
 
+    /**
+     * RequestController constructor.
+     * @param DatabaseServiceContainer $databaseServiceContainer
+     */
     public function __construct(DatabaseServiceContainer $databaseServiceContainer)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
@@ -24,6 +29,7 @@ class RequestController
      * Creates a new API call, which can then be called by calling /api/v1/<website>/<endpoint>
      *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function create(Request $request)
@@ -33,33 +39,46 @@ class RequestController
             return new JsonResponse($errors, 400);
         }
 
+        $entityManager = $this->databaseServiceContainer->getWebsiteService()->getEntityManager();
         $this->databaseServiceContainer->getConnection()->beginTransaction();
+        $routesCreated = [];
         try {
             $website = $this->databaseServiceContainer->getWebsiteService()->getOneByName($request->get('website_name'));
 
-            if (empty($website)) {
-                $website['id'] = $this->databaseServiceContainer->getWebsiteService()->getUuid();
-                $website['name'] = $request->get('website_name');
-                $website['url'] = $request->get('website_url');
-                $website['url_hash'] = md5($website['url']);
-                $this->databaseServiceContainer->getWebsiteService()->save($website);
+            if (false === ($website instanceof Website)) {
+
+                $website = new Website();
+                $website
+                    ->setName($request->get('website_name'))
+                    ->setUrl($request->get('website_url'))
+                    ->setUrlHash(md5($website->getUrl()));
+
+                $entityManager->persist($website);
             }
 
             foreach ($request->get('endpoints') as $end_point_request) {
-                $end_point['id'] = $this->databaseServiceContainer->getEndPointService()->getUuid();
-                $end_point['name'] = $end_point_request['name'];
-                $end_point['website_id '] = $website['id'];
 
-                $this->databaseServiceContainer->getEndPointService()->save($end_point);
+                $end_point = new Endpoint();
+                $end_point
+                    ->setName($end_point_request['name'])
+                    ->setWebsite($website);
+
+                $entityManager->persist($end_point);
 
                 foreach ($end_point_request['selectors'] as $selector_request) {
-                    $selector['id'] = $this->databaseServiceContainer->getSelectorService()->getUuid();
-                    $selector['alias'] = $selector_request['alias'];
-                    $selector['selector'] = $selector_request['selector'];
-                    $selector['endpoint_id'] = $end_point['id'];
-                    $this->databaseServiceContainer->getSelectorService()->save($selector);
+
+                    $selector = new Selector();
+                    $selector
+                        ->setAlias($selector_request['alias'])
+                        ->setSelector($selector_request['selector'])
+                        ->setEndpoint($end_point);
+
+                    $entityManager->persist($selector);
                 }
+                $routesCreated[] = 'Route successfully created: ' . $website->getName() . '/' . $end_point->getName();
+
             }
+            $entityManager->flush();
             $this->databaseServiceContainer->getConnection()->commit();
 
         } catch (\Exception $e) {
@@ -67,7 +86,7 @@ class RequestController
             return new JsonResponse(['An error occurred while handling your request: ' . $e->getMessage()], 200);
         }
 
-        return new JsonResponse(['successfully created route with name: ' . $website['name']] . '/' . $end_point['name'], 200);
+        return new JsonResponse($routesCreated, 200);
     }
 
 
@@ -94,35 +113,39 @@ class RequestController
     {
         $website = $this->databaseServiceContainer->getWebsiteService()->getOneByName($websiteName);
 
-        if (empty($website)) {
+        if (false === ($website instanceof Website)) {
             return new JsonResponse(['No endpoint found for route: ' . $websiteName . '/' . $endpointName], 404);
         }
 
         $endpoint = $this->databaseServiceContainer->getEndPointService()->getOneByName($endpointName);
-        if (empty($endpoint)) {
+        if (false === ($endpoint instanceof Endpoint)) {
             return new JsonResponse(['No endpoint found for route: ' . $websiteName . '/' . $endpointName], 404);
         }
 
+        $entityManager = $this->databaseServiceContainer->getWebsiteService()->getEntityManager();
         try {
             $this->databaseServiceContainer->getConnection()->beginTransaction();
 
-            $selectors = $this->databaseServiceContainer->getSelectorService()->getAllByWebsiteIdAndEndpointId($website['id'], $endpoint['id']);
-            foreach ($selectors as $selector) {
-                $this->databaseServiceContainer->getSelectorService()->delete($selector['id']);
+            foreach($endpoint->getSelectors() as $selector)
+            {
+                $entityManager->remove($selector);
             }
 
-            $this->databaseServiceContainer->getEndPointService()->delete($endpoint['id']);
+            $entityManager->remove($endpoint);
+            $entityManager->flush($endpoint);
 
-            // if there are no endpoints left, delete the website.
-            $endPoints = $this->databaseServiceContainer->getEndPointService()->getAllByWebsiteId($website['id']);
-            if (empty($endPoints)) {
-                $this->databaseServiceContainer->getWebsiteService()->delete($website['id']);
+            $entityManager->refresh($website);
+            $endPoints = $website->getEndpoints();
+
+            if (count($endPoints) === 0) {
+                $entityManager->remove($website);
+                $entityManager->flush($website);
             }
 
             $this->databaseServiceContainer->getConnection()->commit();
         } catch (\Exception $e) {
             $this->databaseServiceContainer->getConnection()->rollBack();
-            return new JsonResponse(['Failed to delete route with name: '.$websiteName .'/' . $endpointName], 500);
+            return new JsonResponse(['Failed to delete route with name: ' . $websiteName . '/' . $endpointName. ': ' . $e->getMessage() ], 500);
         }
 
         return new JsonResponse(['successfully deleted route with name: ' . $websiteName . '/' . $endpointName], 200);

@@ -17,12 +17,6 @@ class Selector
      */
     protected $id;
 
-    /**
-     * @Column(type="string")
-     * @var string
-     */
-    protected $name;
-
    /**
      * @Column(type="string")
      * @var string
@@ -42,7 +36,7 @@ class Selector
     protected $endpointId;
 
     /**
-     * @OneToMany(targetEntity="Endpoint", mappedBy="selectors")
+     * @ManyToOne(targetEntity="Endpoint", inversedBy="selectors")
      * @JoinColumn(name="endpoint_id", referencedColumnName="id")
      *
      * @var Endpoint
@@ -58,22 +52,6 @@ class Selector
     }
 
     /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
      * @return Endpoint
      */
     public function getEndPoint()
@@ -83,10 +61,13 @@ class Selector
 
     /**
      * @param Endpoint $endPoint
+     * @return $this
      */
-    public function setEndpoints(Endpoint $endPoint)
+    public function setEndpoint(Endpoint $endPoint)
     {
         $this->endpoint = $endPoint;
+        $this->endpointId = $endPoint->getId();
+        return $this;
     }
 
     /**
@@ -99,10 +80,12 @@ class Selector
 
     /**
      * @param string $selector
+     * @return $this
      */
     public function setSelector(string $selector)
     {
         $this->selector = $selector;
+        return $this;
     }
 
     /**
@@ -115,10 +98,12 @@ class Selector
 
     /**
      * @param string $endpointId
+     * @return $this
      */
     public function setEndpointId(string $endpointId)
     {
         $this->endpointId = $endpointId;
+        return $this;
     }
 
     /**
@@ -131,9 +116,11 @@ class Selector
 
     /**
      * @param string $alias
+     * @return $this
      */
     public function setAlias(string $alias)
     {
         $this->alias = $alias;
+        return $this;
     }
 }

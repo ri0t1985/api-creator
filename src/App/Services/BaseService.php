@@ -22,13 +22,7 @@ abstract class BaseService
     /** @return EntityRepository */
     abstract protected function getRepository();
     //
-//    /**
-//     * @return string
-//     */
-//    public function getUuid()
-//    {
-//        return $this->db->fetchColumn('SELECT uuid()');
-//    }
+
 
     public function getOne($id)
     {
@@ -38,5 +32,13 @@ abstract class BaseService
     public function getAll()
     {
         return $this->getRepository()->findAll();
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
     }
 }

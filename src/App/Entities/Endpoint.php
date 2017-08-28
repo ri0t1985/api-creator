@@ -29,7 +29,7 @@ class Endpoint
     protected $websiteId;
 
     /**
-     * @OneToMany(targetEntity="Selector", mappedBy="endpoints")
+     * @OneToMany(targetEntity="Selector", mappedBy="endpoint")
      * @JoinColumn(name="endpoint_id", referencedColumnName="id")
      * @var Selector[]
      **/
@@ -37,7 +37,7 @@ class Endpoint
 
     /**
      * @ManyToOne(targetEntity="Website", inversedBy="endpoints")
-     * @JoinColumn(name="id", referencedColumnName="website_id")
+     * @JoinColumn(name="website_id", referencedColumnName="id")
      * @var Website
      **/
     protected $website;
@@ -60,10 +60,12 @@ class Endpoint
 
     /**
      * @param string $name
+     * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
@@ -76,10 +78,12 @@ class Endpoint
 
     /**
      * @param Selector[] $selectors
+     * @return $this
      */
     public function setSelectors(array $selectors)
     {
         $this->selectors = $selectors;
+        return $this;
     }
 
     /**
@@ -92,9 +96,12 @@ class Endpoint
 
     /**
      * @param Website $website
+     * @return $this
      */
     public function setWebsite(Website $website)
     {
         $this->website = $website;
+        $this->websiteId = $website->getId();
+        return $this;
     }
 }
