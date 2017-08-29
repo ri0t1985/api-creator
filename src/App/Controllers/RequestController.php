@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Entities\Endpoint;
 use App\Entities\Selector;
 use App\Entities\Website;
+use App\Helpers\HtmlParser;
 use App\Services\DatabaseServiceContainer;
 use App\SourceRetrieval\SourceRetrievalInterface;
 use Sunra\PhpSimple\HtmlDomParser;
@@ -78,10 +79,13 @@ class RequestController
                 foreach ($end_point_request['selectors'] as $selector_request) {
 
                     $selector = new Selector();
+                    $type = (isset($selector_request['type'])) ? $selector_request['type'] :  Selector::TYPE_CSS;
+
                     $selector
                         ->setAlias($selector_request['alias'])
                         ->setSelector($selector_request['selector'])
-                        ->setEndpoint($end_point);
+                        ->setEndpoint($end_point)
+                        ->setType($type);
 
                     $entityManager->persist($selector);
                 }
@@ -135,34 +139,21 @@ class RequestController
             foreach ($end_point_request['selectors'] as $selector_request) {
 
                 $selector = new Selector();
+                $type = (isset($selector_request['type'])) ? $selector_request['type'] :  Selector::TYPE_CSS;
+
                 $selector
                     ->setAlias($selector_request['alias'])
                     ->setSelector($selector_request['selector'])
-                    ->setEndpoint($end_point);
+                    ->setEndpoint($end_point)
+                    ->setType($type);
 
                 $selectors[] = $selector;
             }
         }
 
         $htmlSource = $this->sourceRetrievalService->retrieveSource($website->getUrl());
-
-        $html = HtmlDomParser::str_get_html($htmlSource);
-
-        $records = [];
-        foreach ($selectors as $selector) {
-            foreach ($html->find($selector->getSelector()) as $key => $element) {
-
-                if (isset($element->src) && !empty($element->src))
-                {
-                    $src = trim(strip_tags((string)$element->src));
-
-                    $records[$key][$selector->getAlias()] = $src;
-                }
-                else {
-                    $records[$key][$selector->getAlias()] = trim(strip_tags((string)$element));
-                }
-            }
-        }
+        $htmlParser = new HtmlParser();
+        $records = $htmlParser->parse($selectors, $htmlSource);
 
         return new JsonResponse($records, 200);
     }
@@ -271,6 +262,12 @@ class RequestController
                 }
                 if (empty($selector_request['selector']) && !is_string($selector_request['selector'])) {
                     $errors['endpoints'][$key]['selectors'][$k] = 'Cannot be empty and should be string!';
+                }
+
+                if (isset($selector_request['type']) && !in_array($selector_request['type'], [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH, '']))
+                {
+                    $errors['endpoints'][$key]['selectors'][$k] = 'Type should be one of the following: '
+                        . implode(',', [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH]);
                 }
             }
         }

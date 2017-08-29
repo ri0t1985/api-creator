@@ -7,6 +7,10 @@ namespace App\Entities;
  **/
 class Selector
 {
+    const TYPE_CSS = 'CSS';
+    const TYPE_REGEX = 'REGEX';
+    const TYPE_XPATH = 'XPATH';
+
     /**
      *
      * @Id
@@ -28,6 +32,12 @@ class Selector
      * @var string
      */
     protected $alias;
+
+    /**
+     * @Column(type="string", columnDefinition="ENUM('CSS', 'XPATH', 'REGEX')")
+     * @var string
+     */
+    protected $type;
 
     /**
      * @Column(name="endpoint_id", type="string")
@@ -73,7 +83,7 @@ class Selector
     /**
      * @return string
      */
-    public function getSelector(): string
+    public function getSelector()
     {
         return $this->selector;
     }
@@ -122,5 +132,27 @@ class Selector
     {
         $this->alias = $alias;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type)
+    {
+        if (!in_array($type,[self::TYPE_CSS, self::TYPE_REGEX, self::TYPE_XPATH]))
+        {
+            throw new \InvalidArgumentException('The given type is not supported. Expected: '
+                . implode([self::TYPE_CSS, self::TYPE_REGEX, self::TYPE_XPATH]). '. Received: '.$type);
+        }
+
+        $this->type = $type;
     }
 }

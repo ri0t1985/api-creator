@@ -4,9 +4,9 @@ namespace App\Controllers;
 
 use App\Entities\Endpoint;
 use App\Entities\Website;
+use App\Helpers\HtmlParser;
 use App\Services\DatabaseServiceContainer;
 use App\SourceRetrieval\SourceRetrievalInterface;
-use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Support\Collection;
 
@@ -21,10 +21,10 @@ class DefaultController
      */
     protected $websiteApiData;
 
-    /** @var DatabaseServiceContainer  */
+    /** @var DatabaseServiceContainer */
     protected $databaseServiceContainer;
 
-    /** @var SourceRetrievalInterface  */
+    /** @var SourceRetrievalInterface */
     protected $sourceRetrievalService;
 
     /**
@@ -35,7 +35,7 @@ class DefaultController
     public function __construct(DatabaseServiceContainer $databaseServiceContainer, SourceRetrievalInterface $sourceRetrievalService)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
-        $this->sourceRetrievalService   = $sourceRetrievalService;
+        $this->sourceRetrievalService = $sourceRetrievalService;
 
         // create collection so we can use _very_ helpful methods to process the data in it
         // see: https://laravel.com/docs/5.4/collections
@@ -51,13 +51,13 @@ class DefaultController
      * @param $searchValue  string     Part of the searchquery: The value for $propertyName to search for
      * @return JsonResponse
      */
-    public function search(Website $website, Endpoint $endpoint, string $propertyName, string $searchValue) : JsonResponse
+    public function search(Website $website, Endpoint $endpoint, string $propertyName, string $searchValue): JsonResponse
     {
         // Get the structured data from the website
-        $websiteApiData =  $this->getWebsiteApiData($website, $endpoint);
+        $websiteApiData = $this->getWebsiteApiData($website, $endpoint);
 
         // get all responses from the fetched API-data which contain properties with the value we search for
-        $searchResults = $websiteApiData->filter(function($searchResultRecord) use ($propertyName, $searchValue) {
+        $searchResults = $websiteApiData->filter(function ($searchResultRecord) use ($propertyName, $searchValue) {
             $propertyValue = collect($searchResultRecord)->get($propertyName, '');
             $searchPropertyHasSearchedValue = (false !== stristr($propertyValue, $searchValue));
 
@@ -78,10 +78,10 @@ class DefaultController
      * @param Endpoint $endpoint
      * @return Collection
      */
-    protected function getWebsiteApiData(Website $website, Endpoint $endpoint) : Collection
+    protected function getWebsiteApiData(Website $website, Endpoint $endpoint): Collection
     {
         // only fetch websitedata when it's not done yet
-        if ( $this->websiteApiData->isEmpty() ){
+        if ($this->websiteApiData->isEmpty()) {
             $this->parseHtml($website, $endpoint);
         }
 
@@ -94,9 +94,9 @@ class DefaultController
      * @param $endpoint
      * @return JsonResponse
      */
-    public function processEndPoint(Website $website, Endpoint $endpoint) : JsonResponse
+    public function processEndPoint(Website $website, Endpoint $endpoint): JsonResponse
     {
-        $websiteApiData =  $this->getWebsiteApiData($website, $endpoint);
+        $websiteApiData = $this->getWebsiteApiData($website, $endpoint);
 
         return new JsonResponse($websiteApiData->toArray(), 200, ['Content-Type' => 'application/json']);
     }
@@ -110,29 +110,10 @@ class DefaultController
      */
     protected function parseHtml(Website $website, Endpoint $endpoint)
     {
-        // get the selectors with which we will be able to point out
-        // relevant data on the target website
-        $selectors = $endpoint->getSelectors();
 
-        $htmlSource = $this->getHtmlSource($website->getUrl());
-
-        $html = HtmlDomParser::str_get_html($htmlSource);
-
-        $records = [];
-        foreach ($selectors as $selector) {
-            foreach ($html->find($selector->getSelector()) as $key => $element) {
-
-                if (isset($element->src) && !empty($element->src))
-                {
-                    $src = trim(strip_tags((string)$element->src));
-
-                    $records[$key][$selector->getAlias()] = $src;
-                }
-                else {
-                    $records[$key][$selector->getAlias()] = trim(strip_tags((string)$element));
-                }
-            }
-        }
+        $html = $this->getHtmlSource($website->getUrl());
+        $htmlParser = new HtmlParser();
+        $records = $htmlParser->parse($endpoint->getSelectors(), $html);
 
         $this->websiteApiData = collect($records);
     }
@@ -144,7 +125,7 @@ class DefaultController
      * @return string
      * @throws \Exception
      */
-    protected function getHtmlSource(string $url) : string
+    protected function getHtmlSource(string $url): string
     {
         return $this->sourceRetrievalService->retrieveSource($url);
     }
