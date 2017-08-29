@@ -83,6 +83,12 @@ In order to create a new call, specify the following data:
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
 ![Create call](web/images/usage_create_call.png)
  
+### Test call
+
+Before submitting a new call, it might be wise to test your call first, to see if the response is retrieved that you might want.
+To do so, simply call the /test endpoint, with the same parameters as you would the /create endpoint. 
+![Test call](web/images/usage_test_call.png)
+ 
 ### List call
 
 To call the data you created in the create call, simply use the website name and endpoint name in your url as such:
@@ -100,3 +106,5 @@ To do this specify your route as such: <website_name>/<end_point>/search/<key>/<
 
 To delete a call, simply call the following url: delete/<website_name>/<endpoint_name>
 If no further endpoints exist on the website, the website will be deleted from the system as well.
+
+![Search call](web/images/usage_delete_call.png)

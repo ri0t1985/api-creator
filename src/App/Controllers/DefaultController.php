@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Entities\Endpoint;
 use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
+use App\SourceRetrieval\SourceRetrievalInterface;
 use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Support\Collection;
@@ -23,13 +24,18 @@ class DefaultController
     /** @var DatabaseServiceContainer  */
     protected $databaseServiceContainer;
 
+    /** @var SourceRetrievalInterface  */
+    protected $sourceRetrievalService;
+
     /**
      * DefaultController constructor.
      * @param DatabaseServiceContainer $databaseServiceContainer
+     * @param SourceRetrievalInterface $sourceRetrievalService
      */
-    public function __construct(DatabaseServiceContainer $databaseServiceContainer)
+    public function __construct(DatabaseServiceContainer $databaseServiceContainer, SourceRetrievalInterface $sourceRetrievalService)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
+        $this->sourceRetrievalService   = $sourceRetrievalService;
 
         // create collection so we can use _very_ helpful methods to process the data in it
         // see: https://laravel.com/docs/5.4/collections
@@ -140,23 +146,6 @@ class DefaultController
      */
     protected function getHtmlSource(string $url) : string
     {
-        // initiate by telling curl which website it needs to act on
-        $c = curl_init($url);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-
-        // execute the fetching
-        $html = curl_exec($c);
-
-        // when there is an error during the execution, stop everything
-        if (curl_error($c))
-        {
-            throw new \Exception(curl_error($c));
-        }
-
-        // nothing went wrong, so nicely close the connection
-        curl_close($c);
-
-        // return the fetched HTML
-        return $html;
+        return $this->sourceRetrievalService->retrieveSource($url);
     }
 }

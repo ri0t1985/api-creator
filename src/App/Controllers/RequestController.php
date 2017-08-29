@@ -6,6 +6,8 @@ use App\Entities\Endpoint;
 use App\Entities\Selector;
 use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
+use App\SourceRetrieval\SourceRetrievalInterface;
+use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,13 +21,18 @@ class RequestController
     /** @var DatabaseServiceContainer */
     protected $databaseServiceContainer;
 
+    /** @var SourceRetrievalInterface  */
+    protected $sourceRetrievalService;
+
     /**
      * RequestController constructor.
      * @param DatabaseServiceContainer $databaseServiceContainer
+     * @param SourceRetrievalInterface $sourceRetrievalService
      */
-    public function __construct(DatabaseServiceContainer $databaseServiceContainer)
+    public function __construct(DatabaseServiceContainer $databaseServiceContainer, SourceRetrievalInterface $sourceRetrievalService)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
+        $this->sourceRetrievalService   = $sourceRetrievalService;
     }
 
     /**
@@ -94,6 +101,73 @@ class RequestController
 
 
     /**
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function test(Request $request)
+    {
+        $errors = $this->validateCreateRequest($request);
+        if (!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
+        $selectors = [];
+        $website = new Website();
+        $website
+            ->setName($request->get('website_name'))
+            ->setUrl($request->get('website_url'))
+            ->setUrlHash(md5($website->getUrl()));
+
+        if (count($request->get('endpoints')) !== 1) {
+            $errors['endpoints'] = 'You can only test one endpoint at a time!';
+            return new JsonResponse($errors, 400);
+        }
+
+        foreach ($request->get('endpoints') as $end_point_request) {
+
+            $end_point = new Endpoint();
+            $end_point
+                ->setName($end_point_request['name'])
+                ->setWebsite($website);
+
+            foreach ($end_point_request['selectors'] as $selector_request) {
+
+                $selector = new Selector();
+                $selector
+                    ->setAlias($selector_request['alias'])
+                    ->setSelector($selector_request['selector'])
+                    ->setEndpoint($end_point);
+
+                $selectors[] = $selector;
+            }
+        }
+
+        $htmlSource = $this->sourceRetrievalService->retrieveSource($website->getUrl());
+
+        $html = HtmlDomParser::str_get_html($htmlSource);
+
+        $records = [];
+        foreach ($selectors as $selector) {
+            foreach ($html->find($selector->getSelector()) as $key => $element) {
+
+                if (isset($element->src) && !empty($element->src))
+                {
+                    $src = trim(strip_tags((string)$element->src));
+
+                    $records[$key][$selector->getAlias()] = $src;
+                }
+                else {
+                    $records[$key][$selector->getAlias()] = trim(strip_tags((string)$element));
+                }
+            }
+        }
+
+        return new JsonResponse($records, 200);
+    }
+
+    /**
      * // TODO: implement this call.
      *
      * @param Request $request
@@ -129,8 +203,7 @@ class RequestController
         try {
             $this->databaseServiceContainer->getConnection()->beginTransaction();
 
-            foreach($endpoint->getSelectors() as $selector)
-            {
+            foreach ($endpoint->getSelectors() as $selector) {
                 $entityManager->remove($selector);
             }
 
@@ -148,7 +221,7 @@ class RequestController
             $this->databaseServiceContainer->getConnection()->commit();
         } catch (\Exception $e) {
             $this->databaseServiceContainer->getConnection()->rollBack();
-            return new JsonResponse(['Failed to delete route with name: ' . $websiteName . '/' . $endpointName. ': ' . $e->getMessage() ], 500);
+            return new JsonResponse(['Failed to delete route with name: ' . $websiteName . '/' . $endpointName . ': ' . $e->getMessage()], 500);
         }
 
         return new JsonResponse(['successfully deleted route with name: ' . $websiteName . '/' . $endpointName], 200);
