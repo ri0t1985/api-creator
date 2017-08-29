@@ -77,8 +77,12 @@ In order to create a new call, specify the following data:
 - website name (will be used in the route)
 - website URL (will be used to scrape the information from)
 - (one or more) endpoint name (will be used in the url)
-- (one or more) selector. Should be a CSS selector to select the element(s) of the HTML source of the website you wish to be returned
-- (one or more) alias. This is the key which will be used to return the content of the above mentioned element
+- (one of more) type. The selector type should one of the following: XPATH, CSS and REGEX. Will default to CSS if not supplied.
+- (one or more) selector. 
+-- In case of xpath, the format is as followed: /html/body/div/
+-- in case of css, simply use the CSS selector. For example: div.class h5
+-- in case of regex: NOT SUPPORTED YET
+- (one or more) alias. This is the key which will be used to return the content of the above mentioned element.
 
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
 ![Create call](web/images/usage_create_call.png)
