@@ -35,13 +35,19 @@ class RoutesLoader
         $websites = $databaseServiceContainer->getWebsiteService()->getAll();
         $api = $this->app["controllers_factory"];
 
+        $cacheService = null;
+        if (class_exists($this->app['cache.class']))
+        {
+            $cacheService = new $this->app['cache.class']($this->app['cache.options']);
+        }
+
         if (!class_exists($this->app['html.service']))
         {
             throw new ConfigurationException('Class for source retrieval does not exist: ' . $this->app['html.service']);
         }
 
         /** @var SourceRetrievalInterface $sourceRetrievalService */
-        $sourceRetrievalService = new $this->app['html.service']();
+        $sourceRetrievalService = new $this->app['html.service']($cacheService);
 
         foreach ($websites as $website)
         {

@@ -17,21 +17,31 @@ class Curl implements SourceRetrievalInterface
      */
     public function retrieveSource(string $url)
     {
-        // initiate by telling curl which website it needs to act on
-        $c = curl_init($url);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+        $html = null;
+        $cacheKey = serialize($url . self::CACHE_KEY_HTML);
+        if (($this->cache instanceof CacheInterface) && $this->cache->has($cacheKey)) {
 
-        // execute the fetching
-        $html = curl_exec($c);
-
-        // when there is an error during the execution, stop everything
-        if (curl_error($c))
-        {
-            throw new SourceRetrievalException(curl_error($c));
+            $html = $this->cache->get($url . self::CACHE_KEY_HTML);
         }
 
-        // nothing went wrong, so nicely close the connection
-        curl_close($c);
+        if ($html === null) {
+            // initiate by telling curl which website it needs to act on
+            $c = curl_init($url);
+            curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+
+            // execute the fetching
+            $html = curl_exec($c);
+
+            // when there is an error during the execution, stop everything
+            if (curl_error($c)) {
+                throw new SourceRetrievalException(curl_error($c));
+            }
+
+            // nothing went wrong, so nicely close the connection
+            curl_close($c);
+
+            $this->cache->store($cacheKey, $html, 600); // TODO: make the TTL configurable.
+        }
 
         // return the fetched HTML
         return $html;

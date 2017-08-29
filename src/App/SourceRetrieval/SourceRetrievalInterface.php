@@ -7,6 +7,8 @@ use App\Cache\CacheInterface;
 
 interface SourceRetrievalInterface
 {
+    const CACHE_KEY_HTML       = '-html';
+
     /**
      * SourceRetrievalInterface constructor.
      * @param CacheInterface|null $cache
