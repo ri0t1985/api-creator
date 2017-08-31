@@ -77,7 +77,7 @@ In order to create a new call, specify the following data:
 - website name (will be used in the route)
 - website URL (will be used to scrape the information from)
 - (one or more) endpoint name (will be used in the url)
-- (one of more) type. The selector type should one of the following: XPATH, CSS and REGEX. Will default to CSS if not supplied.
+- (one or more) type. The selector type should one of the following: XPATH, CSS and REGEX. Will default to CSS if not supplied.
 - (one or more) selector. 
 -- In case of xpath, the format is as followed: /html/body/div/
 -- in case of css, simply use the CSS selector. For example: div.class h5
