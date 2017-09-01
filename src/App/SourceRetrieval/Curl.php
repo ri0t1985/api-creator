@@ -26,7 +26,7 @@ class Curl implements SourceRetrievalInterface
 
         if ($html === null) {
 
-            $html = $this->getSourceThroughCurl($html);
+            $html = $this->getSourceThroughCurl($url);
             if ($this->cache instanceof CacheInterface)
             {
                 $this->cache->store($cacheKey, $html, 600); // TODO: make the TTL configurable.

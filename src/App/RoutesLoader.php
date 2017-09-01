@@ -29,7 +29,6 @@ class RoutesLoader
      */
     public function bindRoutesToControllers()
     {
-        var_dump($this->app['database.service_container']);
         /** @var DatabaseServiceContainer $databaseServiceContainer */
         $databaseServiceContainer = $this->app['database.service_container'];
 
