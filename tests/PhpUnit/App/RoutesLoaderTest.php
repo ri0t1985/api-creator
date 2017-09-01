@@ -34,19 +34,14 @@ final class RoutesLoaderTest extends TestCase
         $databaseServiceContainer = $this->createMock(DatabaseServiceContainer::class);
         $databaseServiceContainer->expects($this->once())->method('getWebsiteService')->willReturn($websiteService);
 
-        $app->expects($this->any())->method('offsetGet')->will($this->onConsecutiveCalls(
-            '',
-            $databaseServiceContainer,
-            Redis::class,
-            HtmlParser::class,
-            $this->createMock(ControllerCollection::class)));
+        $app->expects($this->any())->method('offsetGet')->with($this->equalTo('database.service_container'))->will($this->returnValue($databaseServiceContainer));
+        $app->expects($this->any())->method('offsetGet')->with($this->equalTo('cache.class'))->will($this->returnValue( Redis::class));
+        $app->expects($this->any())->method('offsetGet')->with($this->equalTo('html.service'))->will($this->returnValue( HtmlParser::class));
+        $app->expects($this->any())->method('offsetGet')->with($this->equalTo('controllers_factory'))->will($this->returnValue(  $this->createMock(ControllerCollection::class)));
 
         $routesLoader = new RoutesLoader($app);
-
-
         $routesLoader->bindRoutesToControllers();
 
-        $this->markTestIncomplete();
 
     }
 
@@ -71,8 +66,6 @@ final class RoutesLoaderTest extends TestCase
         $endpointA->expects($this->once())->method('getName')->willReturn($name.'_endpointA');
         $endpointB = $this->createMock(Endpoint::class);
         $endpointB->expects($this->once())->method('getName')->willReturn($name.'_endpointB');
-
-
 
         $website->expects($this->once())->method('getEndpoints')->willReturn([$endpointA, $endpointB]);
     }

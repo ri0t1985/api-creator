@@ -8,7 +8,6 @@ use App\Entities\Website;
 use App\Helpers\HtmlParser;
 use App\Services\DatabaseServiceContainer;
 use App\SourceRetrieval\SourceRetrievalInterface;
-use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -247,10 +246,10 @@ class RequestController
         }
 
         return new JsonResponse([
-            'website_name' => $websiteName,
-            'website_url'  => $website->getUrl(),
+            'website_name'  => $websiteName,
+            'website_url'   => $website->getUrl(),
             'endpoint_name' => $endpointName,
-            'selectors' => $selectorInfo
+            'selectors'     => $selectorInfo
         ], 200);
     }
 
