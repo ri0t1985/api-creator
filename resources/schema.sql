@@ -14,8 +14,8 @@ CREATE TABLE `endpoints` (
 );
 
 CREATE TABLE `selectors` (
-  `id` varchar(256) NOT NULL,
-  `endpoint_id` varchar(256) NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `endpoint_id` varchar(255) NOT NULL,
   `selector` varchar(150) NOT NULL,
   `alias` varchar(150) NOT NULL,
   `type` enum('CSS','XPATH','REGEX') DEFAULT 'CSS',
