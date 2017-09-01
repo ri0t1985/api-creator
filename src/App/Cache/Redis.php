@@ -26,7 +26,7 @@ class Redis implements CacheInterface
      */
     public function has($key)
     {
-        return $this->client->exists($key) ? true : false;
+        return $this->getClient()->exists($key) ? true : false;
     }
 
     /**
@@ -35,7 +35,7 @@ class Redis implements CacheInterface
      */
     public function get($key)
     {
-        return $this->client->get($key);
+        return $this->getClient()->get($key);
     }
 
     /**
@@ -44,7 +44,7 @@ class Redis implements CacheInterface
      */
     public function remove(array $keys)
     {
-        return $this->client->del($keys);
+        return $this->getClient()->del($keys);
     }
 
     /**
@@ -55,6 +55,14 @@ class Redis implements CacheInterface
      */
     public function store($key, $value, $ttl)
     {
-        return $this->client->set($key, $value, 'ex', $ttl);
+        return $this->getClient()->set($key, $value, 'ex', $ttl);
+    }
+
+    /**
+     * @return Client
+     */
+    protected function getClient()
+    {
+        return $this->client;
     }
 }
