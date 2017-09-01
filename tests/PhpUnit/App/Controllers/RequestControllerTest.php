@@ -22,7 +22,7 @@ final class RequestControllerTest extends TestCase
 {
 
     /**
-     *
+     * @covers RequestController::info()
      */
     public function testInfo(): void
     {
