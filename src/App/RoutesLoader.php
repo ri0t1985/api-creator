@@ -86,6 +86,11 @@ class RoutesLoader
             return $controller->delete($websiteName, $endpointName);
         });
 
+        $api->get('/info/{websiteName}/{endpointName}',function($websiteName, $endpointName) use ($databaseServiceContainer, $sourceRetrievalService){
+            $controller = new RequestController($databaseServiceContainer, $sourceRetrievalService);
+            return $controller->info($websiteName, $endpointName);
+        });
+
         $api->match('{url}', function(){
             return new JsonResponse(['The requested end point does not exit', 404]);
         })->assert('url', '.+');

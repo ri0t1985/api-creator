@@ -93,6 +93,12 @@ Before submitting a new call, it might be wise to test your call first, to see i
 To do so, simply call the /test endpoint, with the same parameters as you would the /create endpoint. 
 ![Test call](web/images/usage_test_call.png)
  
+### Info call
+
+You can retrieve information about a call, including the endpoint and selectors, by calling the /info/<website_name>/<endpoint_name> endpoint.
+
+![list call](web/images/usage_info_call.png) 
+
 ### List call
 
 To call the data you created in the create call, simply use the website name and endpoint name in your url as such:

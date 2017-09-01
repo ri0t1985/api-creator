@@ -219,6 +219,42 @@ class RequestController
     }
 
     /**
+     * Returns the info about an endpoint.
+     *
+     * @param string $websiteName
+     * @param string $endpointName
+     * @return JsonResponse
+     */
+    public function info($websiteName, $endpointName)
+    {
+        $website = $this->databaseServiceContainer->getWebsiteService()->getOneByName($websiteName);
+
+        if (false === ($website instanceof Website)) {
+            return new JsonResponse(['No endpoint found for route: ' . $websiteName . '/' . $endpointName], 404);
+        }
+
+        $endpoint = $this->databaseServiceContainer->getEndPointService()->getOneByName($endpointName);
+        if (false === ($endpoint instanceof Endpoint)) {
+            return new JsonResponse(['No endpoint found for route: ' . $websiteName . '/' . $endpointName], 404);
+        }
+
+        $selectorInfo = [];
+        foreach ($endpoint->getSelectors() as $key => $selector)
+        {
+            $selectorInfo[$key]['alias']   = $selector->getAlias();
+            $selectorInfo[$key]['type']     = $selector->getType();
+            $selectorInfo[$key]['selector'] = $selector->getSelector();
+        }
+
+        return new JsonResponse([
+            'website_name' => $websiteName,
+            'website_url'  => $website->getUrl(),
+            'endpoint_name' => $endpointName,
+            'selectors' => $selectorInfo
+        ], 200);
+    }
+
+    /**
      * Attempts to check if the request is valid before it can be submitted.
      *
      * @param Request $request
