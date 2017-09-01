@@ -151,6 +151,7 @@ class Selector
 
     /**
      * @param string $type
+     * @return $this
      */
     public function setType(string $type)
     {
@@ -161,6 +162,7 @@ class Selector
         }
 
         $this->type = $type;
+        return $this;
     }
 
     /**

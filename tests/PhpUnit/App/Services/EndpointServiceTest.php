@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace PhpUnit\App\Services;
 
-use App\Services\WebsiteService;
+use App\Services\EndPointService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers WebsiteService
+ * @covers EndPointService
  */
-final class WebsiteServiceTest extends TestCase
+final class EndpointServiceTest extends TestCase
 {
     public function testGetOneByName(): void
     {
-        $websiteService = new WebsiteService($this->getEntityManagerMock());
+        $endpointService = new EndPointService($this->getEntityManagerMock());
 
-        $this->assertEquals('one_by_name', $websiteService->getOneByName('test'));
+        $this->assertEquals('one_by_name', $endpointService->getOneByName('test'));
     }
 
     public function testGetOne(): void
     {
-        $websiteService = new WebsiteService($this->getEntityManagerMock());
+        $endpointService = new EndPointService($this->getEntityManagerMock());
 
-        $this->assertEquals('get_one', $websiteService->getOne(1));
+        $this->assertEquals('get_one', $endpointService->getOne(1));
     }
 
     public function testGetAll(): void
     {
-        $websiteService = new WebsiteService($this->getEntityManagerMock());
+        $endpointService = new EndPointService($this->getEntityManagerMock());
 
-        $this->assertEquals('get_all', $websiteService->getAll());
+        $this->assertEquals('get_all', $endpointService->getAll());
     }
 
     /**

@@ -14,7 +14,6 @@ final class DefaultControllerTest extends TestCase
 {
     public function testSomething(): void
     {
-        $this->markTestIncomplete();
-
+        $this->markTestSkipped();
     }
 }

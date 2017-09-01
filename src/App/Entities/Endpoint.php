@@ -89,7 +89,7 @@ class Endpoint
     /**
      * @return Website
      */
-    public function getWebsite(): Website
+    public function getWebsite()
     {
         return $this->website;
     }

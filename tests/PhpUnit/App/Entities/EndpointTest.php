@@ -12,8 +12,16 @@ use PHPUnit\Framework\TestCase;
  */
 final class EndpointTest extends TestCase
 {
-    public function testSomething(): void
+    public function testEndpoint(): void
     {
-        $this->markTestIncomplete();
+        $endpoint = new Endpoint();
+
+        $this->assertEmpty($endpoint->getName());
+        $this->assertEmpty($endpoint->getWebsite());
+
+        $endpoint->setName('test_name');
+
+        $this->assertEquals('test_name', $endpoint->getName());
+
     }
 }

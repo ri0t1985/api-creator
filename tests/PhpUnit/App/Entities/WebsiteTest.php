@@ -12,9 +12,21 @@ use PHPUnit\Framework\TestCase;
  */
 final class WebsiteTest extends TestCase
 {
-    public function testSomething(): void
+    public function testWebsite(): void
     {
-        $this->markTestIncomplete();
+        $website = new Website();
 
+        $this->assertEmpty($website->getName());
+        $this->assertEmpty($website->getUrl());
+        $this->assertEmpty($website->getUrlHash());
+        $this->assertEmpty($website->getEndpoints());
+
+        $website->setName('test_name');
+        $website->setUrl('test_url');
+        $website->setUrlHash('url_hash');
+
+        $this->assertEquals('test_name', $website->getName());
+        $this->assertEquals('test_url',  $website->getUrl());
+        $this->assertEquals('url_hash',  $website->getUrlHash());
     }
 }

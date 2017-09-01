@@ -15,6 +15,5 @@ final class RegexTest extends TestCase
     public function testSomething(): void
     {
         $this->markTestIncomplete();
-
     }
 }
