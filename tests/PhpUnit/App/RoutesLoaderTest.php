@@ -20,6 +20,9 @@ use Silex\ControllerCollection;
  */
 final class RoutesLoaderTest extends TestCase
 {
+    /**
+     * @covers RoutesLoader::bindRoutesToControllers()
+     */
     public function testBindRoutesToControllers(): void
     {
         $this->markTestSkipped();
@@ -41,8 +44,6 @@ final class RoutesLoaderTest extends TestCase
 
         $routesLoader = new RoutesLoader($app);
         $routesLoader->bindRoutesToControllers();
-
-
     }
 
     /**
@@ -56,7 +57,11 @@ final class RoutesLoaderTest extends TestCase
         ];
     }
 
-
+    /**
+     * Creates a website mock object.
+     * @param string $name
+     * @return \PHPUnit_Framework_MockObject_MockObject|Website
+     */
     protected function createWebsite($name)
     {
         $website = $this->createMock(Website::class);
@@ -68,5 +73,7 @@ final class RoutesLoaderTest extends TestCase
         $endpointB->expects($this->once())->method('getName')->willReturn($name.'_endpointB');
 
         $website->expects($this->once())->method('getEndpoints')->willReturn([$endpointA, $endpointB]);
+
+        return $website;
     }
 }

@@ -58,7 +58,6 @@ final class CurlTest extends TestCase
 
 class CurlMock extends Curl
 {
-
     const CURL_HTML =  '<html><body>Hello world!</body></html>';
     protected function getSourceThroughCurl($url)
     {

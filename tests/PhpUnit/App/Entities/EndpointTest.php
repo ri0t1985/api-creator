@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class EndpointTest extends TestCase
 {
+    /**
+     * Tests the basic functionality of an end point.
+     */
     public function testEndpoint(): void
     {
         $endpoint = new Endpoint();
@@ -22,6 +25,5 @@ final class EndpointTest extends TestCase
         $endpoint->setName('test_name');
 
         $this->assertEquals('test_name', $endpoint->getName());
-
     }
 }

@@ -18,6 +18,8 @@ final class XpathTest extends TestCase
      * @param string $selector
      * @param array $expected
      *
+     * @covers Xpath::process()
+     *
      * @dataProvider processProvider
      */
     public function testProcess($html, $selector, $expected): void
@@ -40,6 +42,11 @@ final class XpathTest extends TestCase
         }
     }
 
+    /**
+     * @see XpathTest::testProcess()
+     *
+     * @return array
+     */
     public function processProvider()
     {
         $html_one =   '<html></html>';
@@ -73,7 +80,6 @@ final class XpathTest extends TestCase
             [$html_three, '//a[@Class="test"]', []],
             [$html_four,  '//a[@Class="test"]', ['<a class="test">link</a>']],
             [$html_five,  '//a[@Class="test"]', ['<a class="test">link</a>','<a class="test">link</a>']],
-
         ];
     }
 }

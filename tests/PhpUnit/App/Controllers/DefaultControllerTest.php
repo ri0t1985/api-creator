@@ -21,6 +21,8 @@ final class DefaultControllerTest extends TestCase
     /**
      * @dataProvider processEndpointProvider
      *
+     * @covers DefaultController::processEndPoint()
+     *
      * @param $selectors
      * @param $html
      * @param $expected
@@ -56,6 +58,11 @@ final class DefaultControllerTest extends TestCase
     }
 
 
+    /**
+     * DataProvider for DefaultControllerTest::testProcessEndpoint
+     *
+     * @return array
+     */
     public function processEndpointProvider()
     {
         $html_one =   '<html></html>';

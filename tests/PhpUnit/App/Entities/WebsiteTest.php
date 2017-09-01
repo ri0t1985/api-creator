@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class WebsiteTest extends TestCase
 {
+    /**
+     * Tests the basic website functionality
+     */
     public function testWebsite(): void
     {
         $website = new Website();

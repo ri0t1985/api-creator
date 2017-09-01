@@ -14,6 +14,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class EndpointServiceTest extends TestCase
 {
+    /**
+     * @covers EndpointService::getOneByName()
+     */
     public function testGetOneByName(): void
     {
         $endpointService = new EndPointService($this->getEntityManagerMock());
@@ -21,6 +24,9 @@ final class EndpointServiceTest extends TestCase
         $this->assertEquals('one_by_name', $endpointService->getOneByName('test'));
     }
 
+    /**
+     * @covers EndPointService::getOne()
+     */
     public function testGetOne(): void
     {
         $endpointService = new EndPointService($this->getEntityManagerMock());
@@ -28,6 +34,9 @@ final class EndpointServiceTest extends TestCase
         $this->assertEquals('get_one', $endpointService->getOne(1));
     }
 
+    /**
+     * @covers EndPointService::getAll()
+     */
     public function testGetAll(): void
     {
         $endpointService = new EndPointService($this->getEntityManagerMock());
@@ -46,6 +55,9 @@ final class EndpointServiceTest extends TestCase
         return $mock;
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|EntityRepository
+     */
     protected function getRepositoryMock()
     {
         $repoMock = $this->createMock(EntityRepository::class);

@@ -2,7 +2,6 @@
 
 namespace App\SourceRetrieval;
 
-
 use App\Cache\CacheInterface;
 use App\Exceptions\SourceRetrievalException;
 
@@ -46,6 +45,13 @@ class Curl implements SourceRetrievalInterface
         $this->cache = $cache;
     }
 
+    /**
+     * Attempts to retrieve the HTML through a curl call.
+     *
+     * @param string $url
+     * @return string
+     * @throws SourceRetrievalException When a curl error occurs
+     */
     protected function getSourceThroughCurl($url)
     {
         // initiate by telling curl which website it needs to act on

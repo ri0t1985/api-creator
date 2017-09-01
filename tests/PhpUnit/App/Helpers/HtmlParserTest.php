@@ -16,6 +16,8 @@ final class HtmlParserTest extends TestCase
     /**
      * @dataProvider parseProvider
      *
+     * @covers HtmlParser::parse()
+     *
      * @param Selector[] $selectors
      * @param string     $source
      * @param string[]   $expected
@@ -55,6 +57,8 @@ final class HtmlParserTest extends TestCase
     }
 
     /**
+     * @see HtmlParserTest::testParse()
+     *
      * @return array
      */
     public function parseProvider()
@@ -93,6 +97,10 @@ final class HtmlParserTest extends TestCase
     }
 
     /**
+     * DataProvider for testException
+     *
+     * @see HtmlParserTest::testException()
+     *
      * @return array
      */
     public function exceptionProvider()

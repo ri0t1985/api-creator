@@ -18,6 +18,8 @@ final class CssTest extends TestCase
      * @param string $selector
      * @param array $expected
      *
+     * @covers Css::process()
+     *
      * @dataProvider processProvider
      */
     public function testProcess($html, $selector, $expected): void
@@ -40,6 +42,11 @@ final class CssTest extends TestCase
         }
     }
 
+    /**
+     * @see CssTest::testProcess()
+     *
+     * @return array
+     */
     public function processProvider()
     {
         $html_one =   '<html></html>';

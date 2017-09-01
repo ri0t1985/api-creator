@@ -14,6 +14,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class WebsiteServiceTest extends TestCase
 {
+    /**
+     * @covers WebsiteService::getOneByName()
+     */
     public function testGetOneByName(): void
     {
         $websiteService = new WebsiteService($this->getEntityManagerMock());
@@ -21,6 +24,9 @@ final class WebsiteServiceTest extends TestCase
         $this->assertEquals('one_by_name', $websiteService->getOneByName('test'));
     }
 
+    /**
+     * @covers WebsiteService::getOne()
+     */
     public function testGetOne(): void
     {
         $websiteService = new WebsiteService($this->getEntityManagerMock());
@@ -28,6 +34,9 @@ final class WebsiteServiceTest extends TestCase
         $this->assertEquals('get_one', $websiteService->getOne(1));
     }
 
+    /**
+     * @covers WebsiteService::getAll()
+     */
     public function testGetAll(): void
     {
         $websiteService = new WebsiteService($this->getEntityManagerMock());
@@ -46,6 +55,9 @@ final class WebsiteServiceTest extends TestCase
         return $mock;
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|EntityRepository
+     */
     protected function getRepositoryMock()
     {
         $repoMock = $this->createMock(EntityRepository::class);

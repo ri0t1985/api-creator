@@ -14,6 +14,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class SelectorServiceTest extends TestCase
 {
+    /**
+     * @covers SelectorService::getOne()
+     */
     public function testGetOne(): void
     {
         $selectorService = new SelectorService($this->getEntityManagerMock());
@@ -21,6 +24,9 @@ final class SelectorServiceTest extends TestCase
         $this->assertEquals('get_one', $selectorService->getOne(1));
     }
 
+    /**
+     * @covers SelectorService::getAll()
+     */
     public function testGetAll(): void
     {
         $selectorService = new SelectorService($this->getEntityManagerMock());
@@ -39,6 +45,9 @@ final class SelectorServiceTest extends TestCase
         return $mock;
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|EntityRepository
+     */
     protected function getRepositoryMock()
     {
         $repoMock = $this->createMock(EntityRepository::class);
