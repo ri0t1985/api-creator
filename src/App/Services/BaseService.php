@@ -21,14 +21,19 @@ abstract class BaseService
 
     /** @return EntityRepository */
     abstract protected function getRepository();
-    //
 
-
+    /**
+     * @param string $id
+     * @return null|object
+     */
     public function getOne($id)
     {
         return $this->getRepository()->find($id);
     }
 
+    /**
+     * @return array
+     */
     public function getAll()
     {
         return $this->getRepository()->findAll();

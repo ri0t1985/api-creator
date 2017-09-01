@@ -5,7 +5,10 @@ namespace App\Controllers;
 use App\Entities\Endpoint;
 use App\Entities\Selector;
 use App\Entities\Website;
+use App\Helpers\HtmlParser;
 use App\Services\DatabaseServiceContainer;
+use App\SourceRetrieval\SourceRetrievalInterface;
+use Sunra\PhpSimple\HtmlDomParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,13 +22,18 @@ class RequestController
     /** @var DatabaseServiceContainer */
     protected $databaseServiceContainer;
 
+    /** @var SourceRetrievalInterface  */
+    protected $sourceRetrievalService;
+
     /**
      * RequestController constructor.
      * @param DatabaseServiceContainer $databaseServiceContainer
+     * @param SourceRetrievalInterface $sourceRetrievalService
      */
-    public function __construct(DatabaseServiceContainer $databaseServiceContainer)
+    public function __construct(DatabaseServiceContainer $databaseServiceContainer, SourceRetrievalInterface $sourceRetrievalService)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
+        $this->sourceRetrievalService   = $sourceRetrievalService;
     }
 
     /**
@@ -71,10 +79,13 @@ class RequestController
                 foreach ($end_point_request['selectors'] as $selector_request) {
 
                     $selector = new Selector();
+                    $type = (isset($selector_request['type'])) ? $selector_request['type'] :  Selector::TYPE_CSS;
+
                     $selector
                         ->setAlias($selector_request['alias'])
                         ->setSelector($selector_request['selector'])
-                        ->setEndpoint($end_point);
+                        ->setEndpoint($end_point)
+                        ->setType($type);
 
                     $entityManager->persist($selector);
                 }
@@ -92,6 +103,60 @@ class RequestController
         return new JsonResponse($routesCreated, 200);
     }
 
+
+    /**
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function test(Request $request)
+    {
+        $errors = $this->validateCreateRequest($request);
+        if (!empty($errors)) {
+            return new JsonResponse($errors, 400);
+        }
+
+        $selectors = [];
+        $website = new Website();
+        $website
+            ->setName($request->get('website_name'))
+            ->setUrl($request->get('website_url'))
+            ->setUrlHash(md5($website->getUrl()));
+
+        if (count($request->get('endpoints')) !== 1) {
+            $errors['endpoints'] = 'You can only test one endpoint at a time!';
+            return new JsonResponse($errors, 400);
+        }
+
+        foreach ($request->get('endpoints') as $end_point_request) {
+
+            $end_point = new Endpoint();
+            $end_point
+                ->setName($end_point_request['name'])
+                ->setWebsite($website);
+
+            foreach ($end_point_request['selectors'] as $selector_request) {
+
+                $selector = new Selector();
+                $type = (isset($selector_request['type'])) ? $selector_request['type'] :  Selector::TYPE_CSS;
+
+                $selector
+                    ->setAlias($selector_request['alias'])
+                    ->setSelector($selector_request['selector'])
+                    ->setEndpoint($end_point)
+                    ->setType($type);
+
+                $selectors[] = $selector;
+            }
+        }
+
+        $htmlSource = $this->sourceRetrievalService->retrieveSource($website->getUrl());
+        $htmlParser = new HtmlParser();
+        $records = $htmlParser->parse($selectors, $htmlSource);
+
+        return new JsonResponse($records, 200);
+    }
 
     /**
      * // TODO: implement this call.
@@ -129,8 +194,7 @@ class RequestController
         try {
             $this->databaseServiceContainer->getConnection()->beginTransaction();
 
-            foreach($endpoint->getSelectors() as $selector)
-            {
+            foreach ($endpoint->getSelectors() as $selector) {
                 $entityManager->remove($selector);
             }
 
@@ -148,7 +212,7 @@ class RequestController
             $this->databaseServiceContainer->getConnection()->commit();
         } catch (\Exception $e) {
             $this->databaseServiceContainer->getConnection()->rollBack();
-            return new JsonResponse(['Failed to delete route with name: ' . $websiteName . '/' . $endpointName. ': ' . $e->getMessage() ], 500);
+            return new JsonResponse(['Failed to delete route with name: ' . $websiteName . '/' . $endpointName . ': ' . $e->getMessage()], 500);
         }
 
         return new JsonResponse(['successfully deleted route with name: ' . $websiteName . '/' . $endpointName], 200);
@@ -198,6 +262,12 @@ class RequestController
                 }
                 if (empty($selector_request['selector']) && !is_string($selector_request['selector'])) {
                     $errors['endpoints'][$key]['selectors'][$k] = 'Cannot be empty and should be string!';
+                }
+
+                if (isset($selector_request['type']) && !in_array($selector_request['type'], [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH, '']))
+                {
+                    $errors['endpoints'][$key]['selectors'][$k] = 'Type should be one of the following: '
+                        . implode(',', [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH]);
                 }
             }
         }

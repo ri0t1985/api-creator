@@ -74,14 +74,24 @@ cd tests/behat
 ### Create call
 
 In order to create a new call, specify the following data:
-- website name (will be used in the route)
+- website name or alias (will be used in the final URL of your API-request like `/api/v1/<name>/`)
 - website URL (will be used to scrape the information from)
-- (one or more) endpoint name (will be used in the url)
-- (one or more) selector. Should be a CSS selector to select the element(s) of the HTML source of the website you wish to be returned
-- (one or more) alias. This is the key which will be used to return the content of the above mentioned element
+- (one or more) endpoint name(s) (will be used in the url of you API-request like `/api/v1/<websitename>/<endpoint>`)
+- (one or more) type(s) The selector type should one of the following: XPATH, CSS or REGEX. Will default to CSS if not supplied.
+- (one or more) selector. The selector that will point to the HTML-element on the website which contains the data you want to be exposed via the API.
+-- In case of xpath, the format is as followed: /html/body/div/
+-- in case of css, simply use the CSS selector. For example: div.class h5
+-- in case of regex: NOT SUPPORTED YET
+- (one or more) alias. This is the key which will be used to return the content of the above mentioned element. You can see this as providing the property-name. Like 'name' or 'date'.
 
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
 ![Create call](web/images/usage_create_call.png)
+ 
+### Test call
+
+Before submitting a new call, it might be wise to test your call first, to see if the response is retrieved that you might want.
+To do so, simply call the /test endpoint, with the same parameters as you would the /create endpoint. 
+![Test call](web/images/usage_test_call.png)
  
 ### List call
 
@@ -100,3 +110,5 @@ To do this specify your route as such: <website_name>/<end_point>/search/<key>/<
 
 To delete a call, simply call the following url: delete/<website_name>/<endpoint_name>
 If no further endpoints exist on the website, the website will be deleted from the system as well.
+
+![Search call](web/images/usage_delete_call.png)

@@ -4,8 +4,19 @@ $app['api.version']  = "v1";
 $app['api.endpoint'] = "/api";
 
 
-$app['log.level'] = Monolog\Logger::ERROR;
+$app['log.level']    = Monolog\Logger::ERROR;
 
+$app['html.service'] = \App\SourceRetrieval\Curl::class;
+
+/**
+ * Cache
+ */
+$app['cache.class'] = \App\Cache\Redis::class;
+$app['cache.options'] = [
+    "scheme" => "tcp",
+    "host"   => "127.0.0.1",
+    "port"   => 6379,
+];
 
 /**
 * MySQL
