@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpUnit\App\Helpers;
 
 use App\Entities\Selector;
+use App\Entities\SelectorOption;
 use App\Helpers\HtmlParser;
 use PHPUnit\Framework\TestCase;
 
@@ -146,7 +147,8 @@ final class HtmlParserTest extends TestCase
         $xpathSelector1 = new Selector();
         $xpathSelector1->setType(Selector::TYPE_XPATH)
             ->setAlias('xpath_1')
-            ->setSelector('html/body/img[@class="test"]');
+            ->setSelector('html/body/img[@class="test"]')
+            ->setOption(SelectorOption::OPTION_PROPERTY, 'src');
 
         $xpathSelector2 = new Selector();
         $xpathSelector2->setType(Selector::TYPE_XPATH)

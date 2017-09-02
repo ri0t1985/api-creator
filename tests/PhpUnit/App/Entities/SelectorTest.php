@@ -6,6 +6,8 @@ namespace PhpUnit\App\Entities;
 
 use App\Entities\Endpoint;
 use App\Entities\Selector;
+use App\Entities\SelectorOption;
+use Doctrine\ORM\Query\Expr\Select;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -79,5 +81,63 @@ final class SelectorTest extends TestCase
             [Selector::TYPE_XPATH,  false],
             ['XPATH',               false],
         ];
+    }
+
+    /**
+     * @dataProvider optionsDataProvider
+     *
+     * @param string $option
+     */
+    public function testOptions($option)
+    {
+        $selector = new Selector();
+
+        $this->assertEmpty($selector->getOptions());
+        $this->assertFalse($selector->hasOption($option));
+        $this->assertNull($selector->getOption($option));
+        $this->assertNull($selector->getOption($option, null));
+        $this->assertFalse($selector->getOption($option, false));
+        $this->assertTrue($selector->getOption($option, true));
+
+        $selector->setOption($option, 'test');
+        $this->assertEquals('test', $selector->getOption($option));
+        $this->assertTrue($selector->hasOption($option));
+    }
+
+    /**
+     * @return array
+     */
+    public function optionsDataProvider()
+    {
+        return
+        [
+            [SelectorOption::OPTION_TRIM],
+            [SelectorOption::OPTION_STRIP_HTML],
+            [SelectorOption::OPTION_PROPERTY],
+        ];
+    }
+
+    public function testOptionsAsArray()
+    {
+        $option1 = new SelectorOption();
+        $option1->setKey('testkey')
+            ->setValue('testvalue');
+
+        $option2 = new SelectorOption();
+        $option2->setKey('testkey_2')
+            ->setValue('testvalue_2');
+
+        /** @var \PHPUnit_Framework_MockObject_MockObject|Selector $mock */
+         $mock = $this->getMockBuilder(Selector::class)
+            ->setMethods(array('getOptions'))
+            ->getMock();
+         $mock->expects(($this->any()))->method('getOptions')->willReturn([$option1, $option2]);
+
+        $this->assertTrue($mock->hasOption('testkey'));
+        $this->assertTrue($mock->hasOption('testkey_2'));
+        $this->assertFalse($mock->hasOption('testkey_3'));
+
+        $this->assertEquals('testvalue', $mock->getOption('testkey'));
+        $this->assertEquals('testvalue_2', $mock->getOption('testkey_2'));
     }
 }

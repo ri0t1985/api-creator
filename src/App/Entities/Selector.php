@@ -61,6 +61,11 @@ class Selector
     protected $options;
 
     /**
+     * @var string[]
+     */
+    protected $optionsAsArray = [];
+
+    /**
      * @return string
      */
     public function getId()
@@ -163,4 +168,68 @@ class Selector
         return $this->options;
     }
 
+    /**
+     * Converts the options to array
+     */
+    protected function getOptionsAsArray()
+    {
+        if ($this->getOptions() === null)
+        {
+            $this->optionsAsArray = [];
+            return;
+        }
+
+        foreach ($this->getOptions() as $option)
+        {
+            $this->optionsAsArray[$option->getKey()] = $option->getValue();
+        }
+    }
+
+    /**
+     * Checks if an option exists
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasOption($key)
+    {
+        if (empty($this->optionsAsArray))
+        {
+            $this->getOptionsAsArray();
+        }
+
+        return (isset($this->optionsAsArray[$key])) ? true : false;
+    }
+
+    /**
+     * Returns the option's value, if it exists. Otherwise return the default.
+     *
+     * @param string $key
+     * @param null|string $default
+     *
+     * @return null|string
+     */
+    public function getOption($key, $default = null)
+    {
+        if (empty($this->optionsAsArray))
+        {
+            $this->getOptionsAsArray();
+        }
+
+        return (isset($this->optionsAsArray[$key])) ? $this->optionsAsArray[$key] : $default;
+    }
+
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function setOption($key, $value)
+    {
+        if (empty($this->optionsAsArray))
+        {
+            $this->getOptionsAsArray();
+        }
+        $this->optionsAsArray[$key] = $value;
+    }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Entities\SelectorOption;
 use Sunra\PhpSimple\HtmlDomParser;
-use App\Entities\Endpoint;
-use App\Entities\Website;
 use App\Entities\Selector;
 use App\Parsers;
 
@@ -48,15 +47,29 @@ class HtmlParser
 
             foreach ($parser->process($selector->getSelector()) as $key => $element) {
 
-                if (isset($element->src) && !empty($element->src))
+                $property = $selector->getOption(SelectorOption::OPTION_PROPERTY, false);
+                if ($property)
                 {
-                    $src = trim(strip_tags((string)$element->src));
+                    $value = (string)$element->$property;
 
-                    $records[$key][$selector->getAlias()] = $src;
                 }
                 else {
-                    $records[$key][$selector->getAlias()] = trim(strip_tags((string)$element));
+                    $value = (string)$element;
                 }
+
+                $stripHtml =  $selector->getOption(SelectorOption::OPTION_STRIP_HTML, true);
+                if ($stripHtml)
+                {
+                    $value = strip_tags($value);
+                }
+
+                $trim =  $selector->getOption(SelectorOption::OPTION_TRIM, true);
+                if ($trim)
+                {
+                    $value = trim($value);
+                }
+
+                $records[$key][$selector->getAlias()] = $value;
             }
         }
 
