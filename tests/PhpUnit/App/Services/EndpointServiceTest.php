@@ -17,7 +17,7 @@ final class EndpointServiceTest extends TestCase
     /**
      * @covers \App\Services\EndPointService::getOneByName()
      */
-    public function testGetOneByName(): void
+    public function testGetOneByName()
     {
         $endpointService = new EndPointService($this->getEntityManagerMock());
 
@@ -27,7 +27,7 @@ final class EndpointServiceTest extends TestCase
     /**
      * @covers \App\Services\EndPointService::getOne()
      */
-    public function testGetOne(): void
+    public function testGetOne()
     {
         $endpointService = new EndPointService($this->getEntityManagerMock());
 
@@ -37,7 +37,7 @@ final class EndpointServiceTest extends TestCase
     /**
      * @covers \App\Services\EndPointService::getAll()
      */
-    public function testGetAll(): void
+    public function testGetAll()
     {
         $endpointService = new EndPointService($this->getEntityManagerMock());
 

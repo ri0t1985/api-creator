@@ -22,7 +22,7 @@ final class XpathTest extends TestCase
      *
      * @dataProvider processProvider
      */
-    public function testProcess($html, $selector, $expected): void
+    public function testProcess($html, $selector, $expected)
     {
         $html = HtmlDomParser::str_get_html($html);
         $css = new Xpath($html);

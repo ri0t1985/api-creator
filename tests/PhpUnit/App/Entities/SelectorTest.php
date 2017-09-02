@@ -21,7 +21,7 @@ final class SelectorTest extends TestCase
      *
      * @dataProvider selectorProvider
      */
-    public function testSelector($type, $exceptionClass): void
+    public function testSelector($type, $exceptionClass)
     {
         $selector = new Selector();
 

@@ -16,7 +16,7 @@ final class SelectorOptionTest extends TestCase
     /**
      * @covers \App\Entities\SelectorOption
      */
-    public function testSelectorOption(): void
+    public function testSelectorOption()
     {
         $selectorOption = new SelectorOption();
 

@@ -17,7 +17,7 @@ final class SelectorServiceTest extends TestCase
     /**
      * @covers \App\Services\SelectorService::getOne()
      */
-    public function testGetOne(): void
+    public function testGetOne()
     {
         $selectorService = new SelectorService($this->getEntityManagerMock());
 
@@ -27,7 +27,7 @@ final class SelectorServiceTest extends TestCase
     /**
      * @covers \App\Services\SelectorService::getAll()
      */
-    public function testGetAll(): void
+    public function testGetAll()
     {
         $selectorService = new SelectorService($this->getEntityManagerMock());
 

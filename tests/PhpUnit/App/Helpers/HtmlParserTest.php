@@ -22,7 +22,7 @@ final class HtmlParserTest extends TestCase
      * @param string     $source
      * @param string[]   $expected
      */
-    public function testCssParse(array $selectors, $source, $expected): void
+    public function testCssParse(array $selectors, $source, $expected)
     {
         $htmlParser = new HtmlParser();
         $return =  $htmlParser->parse($selectors, $source);
@@ -39,7 +39,7 @@ final class HtmlParserTest extends TestCase
      * @param string     $source
      * @param string[]   $expected
      */
-    public function testXpathParse(array $selectors, $source, $expected): void
+    public function testXpathParse(array $selectors, $source, $expected)
     {
         $htmlParser = new HtmlParser();
         $return =  $htmlParser->parse($selectors, $source);
@@ -56,7 +56,7 @@ final class HtmlParserTest extends TestCase
      * @param string     $source
      * @param string[]   $expected
      */
-    public function testRegexParse(array $selectors, $source, $expected): void
+    public function testRegexParse(array $selectors, $source, $expected)
     {
         $htmlParser = new HtmlParser();
         $return =  $htmlParser->parse($selectors, $source);

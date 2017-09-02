@@ -19,7 +19,7 @@ final class DatabaseServiceContainerTest extends TestCase
     /**
      * @covers \App\Services\DatabaseServiceContainer::getEndPointService()
      */
-    public function testGetEndpointService(): void
+    public function testGetEndpointService()
     {
         $databaseServiceContainer = new DatabaseServiceContainer($this->getEntityManagerMock());
         $endpointService = new EndPointService($this->getEntityManagerMock());
@@ -29,7 +29,7 @@ final class DatabaseServiceContainerTest extends TestCase
     /**
      * @covers \App\Services\DatabaseServiceContainer::getWebsiteService()
      */
-    public function testGetWebsiteService(): void
+    public function testGetWebsiteService()
     {
         $databaseServiceContainer = new DatabaseServiceContainer($this->getEntityManagerMock());
         $websiteService = new WebsiteService($this->getEntityManagerMock());
@@ -39,7 +39,7 @@ final class DatabaseServiceContainerTest extends TestCase
     /**
      * @covers \App\Services\DatabaseServiceContainer::getSelectorService()
      */
-    public function testGetSelectorService(): void
+    public function testGetSelectorService()
     {
         $databaseServiceContainer = new DatabaseServiceContainer($this->getEntityManagerMock());
         $selectorService = new SelectorService($this->getEntityManagerMock());
@@ -49,7 +49,7 @@ final class DatabaseServiceContainerTest extends TestCase
     /**
      * @covers \App\Services\DatabaseServiceContainer::getConnection()
      */
-    public function testGetConnection(): void
+    public function testGetConnection()
     {
         $databaseServiceContainer = new DatabaseServiceContainer($this->getEntityManagerMock());
         $this->assertEquals('connection_string', $databaseServiceContainer->getConnection());
