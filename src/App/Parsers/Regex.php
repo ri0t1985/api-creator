@@ -20,10 +20,16 @@ class Regex implements ParserInterface
 
     /**
      * @param $selector
-     * @return int
+     * @return array
      */
     public function process($selector)
     {
-       return preg_match_all('/'.$selector.'/ims', $this->html);
+       preg_match_all('/'.$selector.'/', $this->html, $matches);
+       if (isset($matches[1]))
+       {
+           return $matches[1];
+       }
+
+       return [];
     }
 }

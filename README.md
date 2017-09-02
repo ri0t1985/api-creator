@@ -81,7 +81,7 @@ In order to create a new call, specify the following data:
 - (one or more) selector. 
 -- In case of xpath, the format is as followed: /html/body/div/
 -- in case of css, simply use the CSS selector. For example: div.class h5
--- in case of regex: NOT SUPPORTED YET
+-- in case of regex: 'class="test">([^<]*)<\/a>'. Note that you should always test these calls, because regex is easy to mess up :)
 - (one or more) alias. This is the key which will be used to return the content of the above mentioned element.
 
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
