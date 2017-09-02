@@ -81,7 +81,7 @@ In order to create a new call, specify the following data:
 - (one or more) selector. The selector that will point to the HTML-element on the website which contains the data you want to be exposed via the API.
 -- In case of xpath, the format is as followed: /html/body/div/
 -- in case of css, simply use the CSS selector. For example: div.class h5
--- in case of regex: NOT SUPPORTED YET
+-- in case of regex: 'class="test">([^<]*)<\/a>'. Note that you should always test these calls, because regex is easy to mess up :)
 - (one or more) alias. This is the key which will be used to return the content of the above mentioned element. You can see this as providing the property-name. Like 'name' or 'date'.
 
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
@@ -93,6 +93,12 @@ Before submitting a new call, it might be wise to test your call first, to see i
 To do so, simply call the /test endpoint, with the same parameters as you would the /create endpoint. 
 ![Test call](web/images/usage_test_call.png)
  
+### Info call
+
+You can retrieve information about a call, including the endpoint and selectors, by calling the /info/<website_name>/<endpoint_name> endpoint.
+
+![list call](web/images/usage_info_call.png) 
+
 ### List call
 
 To call the data you created in the create call, simply use the website name and endpoint name in your url as such:

@@ -70,7 +70,7 @@ class Website
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getUrl()
     {
         return $this->url;
     }
@@ -88,7 +88,7 @@ class Website
     /**
      * @return string
      */
-    public function getUrlHash(): string
+    public function getUrlHash()
     {
         return $this->urlHash;
     }

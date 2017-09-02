@@ -24,6 +24,16 @@ CREATE TABLE `selectors` (
   CONSTRAINT `selectors_fk0` FOREIGN KEY (`endpoint_id`) REFERENCES `endpoints` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+  CREATE TABLE `selector_options` (
+	`id` varchar(255) NOT NULL,
+	`selector_id` varchar(255) NOT NULL,
+	`key` varchar(255) NOT NULL,
+	`value` varchar(255) NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `selector_options` ADD CONSTRAINT `selector_options_fk0` FOREIGN KEY (`selector_id`) REFERENCES `selectors`(`id`);
+
 ALTER TABLE `endpoints` ADD CONSTRAINT `endpoints_fk0` FOREIGN KEY (`website_id`) REFERENCES `websites`(`id`);
 
 ALTER TABLE `selectors` ADD CONSTRAINT `selectors_fk0` FOREIGN KEY (`endpoint_id`) REFERENCES `endpoints`(`id`);

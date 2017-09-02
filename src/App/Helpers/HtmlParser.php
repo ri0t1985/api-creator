@@ -14,6 +14,7 @@ class HtmlParser
      * @param Selector[] $selectors
      * @param string $htmlSource
      * @return array
+     * @throws \Exception
      */
     public function parse($selectors, $htmlSource)
     {
@@ -21,6 +22,11 @@ class HtmlParser
         // relevant data on the target website
 
         $html = HtmlDomParser::str_get_html($htmlSource);
+
+        if (false === $html)
+        {
+            throw new \Exception('Unable to parse HTML!');
+        }
 
         $records = [];
         foreach ($selectors as $selector) {

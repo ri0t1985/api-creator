@@ -53,6 +53,15 @@ class DefaultController
      */
     public function search(Website $website, Endpoint $endpoint, string $propertyName, string $searchValue): JsonResponse
     {
+        if (empty($propertyName) || empty($searchValue))
+        {
+            return new JsonResponse(
+                [],
+                200,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
         // Get the structured data from the website
         $websiteApiData = $this->getWebsiteApiData($website, $endpoint);
 

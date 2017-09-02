@@ -6,7 +6,8 @@
         "monolog/monolog": "^1.23",
         "illuminate/support": "^5.4",
         "doctrine/orm": "^2.5",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "phpunit/phpunit": "^6.3"
     },
     "autoload": {
         "psr-0": {
@@ -16,7 +17,6 @@
     "require-dev": {
         "behat/mink-extension": "^2.2",
         "behat/mink-goutte-driver": "^1.2",
-        "phpunit/phpunit": "^6.3",
         "behat/mink-selenium2-driver": "^1.3"
     }
 }

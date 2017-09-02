@@ -54,6 +54,13 @@ class Selector
     protected $endpoint;
 
     /**
+     * @OneToMany(targetEntity="SelectorOption", mappedBy="selector")
+     * @JoinColumn(name="selector_id", referencedColumnName="id")
+     * @var SelectorOption[]
+     **/
+    protected $options;
+
+    /**
      * @return string
      */
     public function getId()
@@ -107,16 +114,6 @@ class Selector
     }
 
     /**
-     * @param string $endpointId
-     * @return $this
-     */
-    public function setEndpointId(string $endpointId)
-    {
-        $this->endpointId = $endpointId;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getAlias()
@@ -144,6 +141,7 @@ class Selector
 
     /**
      * @param string $type
+     * @return $this
      */
     public function setType(string $type)
     {
@@ -154,5 +152,15 @@ class Selector
         }
 
         $this->type = $type;
+        return $this;
     }
+
+    /**
+     * @return SelectorOption[]
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
 }
