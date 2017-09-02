@@ -14,14 +14,14 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @covers DefaultController
+ * @covers \App\Controllers\DefaultController
  */
 final class DefaultControllerTest extends TestCase
 {
     /**
      * @dataProvider processEndpointProvider
      *
-     * @covers DefaultController::processEndPoint()
+     * @covers \App\Controllers\DefaultController::processEndPoint()
      *
      * @param $selectors
      * @param $html

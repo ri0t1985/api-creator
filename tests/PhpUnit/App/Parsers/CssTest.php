@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Sunra\PhpSimple\HtmlDomParser;
 
 /**
- * @covers Css
+ * @covers \App\Parsers\Css
  */
 final class CssTest extends TestCase
 {
@@ -18,7 +18,7 @@ final class CssTest extends TestCase
      * @param string $selector
      * @param array $expected
      *
-     * @covers Css::process()
+     * @covers \App\Parsers\Css
      *
      * @dataProvider processProvider
      */
@@ -43,7 +43,7 @@ final class CssTest extends TestCase
     }
 
     /**
-     * @see CssTest::testProcess()
+     * @see \App\Parsers\Css::testProcess()
      *
      * @return array
      */

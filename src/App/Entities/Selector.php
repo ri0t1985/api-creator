@@ -114,16 +114,6 @@ class Selector
     }
 
     /**
-     * @param string $endpointId
-     * @return $this
-     */
-    public function setEndpointId(string $endpointId)
-    {
-        $this->endpointId = $endpointId;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getAlias()
@@ -168,7 +158,7 @@ class Selector
     /**
      * @return SelectorOption[]
      */
-    public function getOptions(): array
+    public function getOptions()
     {
         return $this->options;
     }

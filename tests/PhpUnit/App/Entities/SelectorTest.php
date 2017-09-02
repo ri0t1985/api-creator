@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace PhpUnit\App\Entities;
 
+use App\Entities\Endpoint;
 use App\Entities\Selector;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Selector
+ * @covers \App\Entities\Selector
  */
 final class SelectorTest extends TestCase
 {
@@ -16,16 +17,20 @@ final class SelectorTest extends TestCase
      * @param string $type
      * @param string $exceptionClass
      *
+     * @covers \App\Entities\Selector
+     *
      * @dataProvider selectorProvider
      */
     public function testSelector($type, $exceptionClass): void
     {
         $selector = new Selector();
 
+        $this->assertEmpty($selector->getId());
         $this->assertEmpty($selector->getType());
         $this->assertEmpty($selector->getSelector());
         $this->assertEmpty($selector->getAlias());
         $this->assertEmpty($selector->getEndpointId());
+        $this->assertEmpty($selector->getOptions());
 
         if (false !== $exceptionClass)
         {
@@ -39,6 +44,15 @@ final class SelectorTest extends TestCase
 
         $selector->setAlias('test_alias');
         $this->assertEquals('test_alias', $selector->getAlias());
+
+        $endpointMock = $this->createMock(Endpoint::class);
+        $endpointMock->expects($this->any())->method('getId')->willReturn('123456');
+
+        $selector->setEndpoint($endpointMock);
+
+        $selector = $selector->getEndPoint();
+
+        $this->assertEquals('123456', $selector->getId());
     }
 
     /**

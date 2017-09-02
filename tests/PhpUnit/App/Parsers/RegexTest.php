@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Sunra\PhpSimple\HtmlDomParser;
 
 /**
- * @covers Regex
+ * @covers \App\Parsers\Regex
  */
 final class RegexTest extends TestCase
 {
@@ -18,7 +18,7 @@ final class RegexTest extends TestCase
      * @param string $selector
      * @param array $expected
      *
-     * @covers Css::process()
+     * @covers \App\Parsers\Regex
      *
      * @dataProvider processProvider
      */

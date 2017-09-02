@@ -42,13 +42,13 @@ class SelectorOption
     /**
      * @return string
      */
-    public function getId(): string
+    public function getId()
     {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return Selector
      */
     public function getSelector()
     {

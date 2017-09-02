@@ -9,19 +9,19 @@ use App\Entities\SelectorOption;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Selector
+ * @covers \App\Entities\SelectorOption
  */
 final class SelectorOptionTest extends TestCase
 {
     /**
-     * @covers  SelectorOption::setKey()
-     * @covers  SelectorOption::setValue()
+     * @covers \App\Entities\SelectorOption
      */
     public function testSelectorOption(): void
     {
         $selectorOption = new SelectorOption();
 
         $this->assertEmpty($selectorOption->getKey());
+        $this->assertEmpty($selectorOption->getId());
         $this->assertEmpty($selectorOption->getValue());
         $this->assertEmpty($selectorOption->getSelector());
 
@@ -30,6 +30,15 @@ final class SelectorOptionTest extends TestCase
 
         $this->assertEquals('test_key', $selectorOption->getKey());
         $this->assertEquals('test_value', $selectorOption->getValue());
+
+        $selectorMock = $this->createMock(Selector::class);
+        $selectorMock->expects($this->any())->method('getId')->willReturn('123456');
+
+        $selectorOption->setSelector($selectorMock);
+
+        $selector = $selectorOption->getSelector();
+
+        $this->assertEquals('123456', $selector->getId());
 
     }
 }

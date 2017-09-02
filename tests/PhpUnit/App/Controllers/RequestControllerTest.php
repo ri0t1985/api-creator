@@ -16,13 +16,13 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @covers RequestController
+ * @covers \App\Controllers\RequestController
  */
 final class RequestControllerTest extends TestCase
 {
 
     /**
-     * @covers RequestController::info()
+     * @covers \App\Controllers\RequestController::info()
      */
     public function testInfo(): void
     {

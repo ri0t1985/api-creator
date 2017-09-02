@@ -8,12 +8,14 @@ use App\Entities\Website;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Website
+ * @covers \App\Entities\Website
  */
 final class WebsiteTest extends TestCase
 {
     /**
      * Tests the basic website functionality
+     *
+     * @covers \App\Entities\Website
      */
     public function testWebsite(): void
     {
@@ -23,6 +25,7 @@ final class WebsiteTest extends TestCase
         $this->assertEmpty($website->getUrl());
         $this->assertEmpty($website->getUrlHash());
         $this->assertEmpty($website->getEndpoints());
+        $this->assertEmpty($website->getId());
 
         $website->setName('test_name');
         $website->setUrl('test_url');

@@ -10,12 +10,12 @@ use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers EndPointService
+ * @covers \App\Services\EndPointService
  */
 final class EndpointServiceTest extends TestCase
 {
     /**
-     * @covers EndpointService::getOneByName()
+     * @covers \App\Services\EndPointService::getOneByName()
      */
     public function testGetOneByName(): void
     {
@@ -25,7 +25,7 @@ final class EndpointServiceTest extends TestCase
     }
 
     /**
-     * @covers EndPointService::getOne()
+     * @covers \App\Services\EndPointService::getOne()
      */
     public function testGetOne(): void
     {
@@ -35,7 +35,7 @@ final class EndpointServiceTest extends TestCase
     }
 
     /**
-     * @covers EndPointService::getAll()
+     * @covers \App\Services\EndPointService::getAll()
      */
     public function testGetAll(): void
     {

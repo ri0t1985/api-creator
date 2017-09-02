@@ -1,0 +1,58 @@
+PhpUnit\App\Controllers\DefaultController
+ [ ] Something
+
+PhpUnit\App\Controllers\RequestController
+ [ ] Something
+
+PhpUnit\App\Entities\Endpoint
+ [x] Endpoint
+
+PhpUnit\App\Entities\SelectorOption
+ [x] Selector option
+
+PhpUnit\App\Entities\Selector
+ [x] Selector 
+
+PhpUnit\App\Entities\Website
+ [x] Website
+
+PhpUnit\App\Helpers\HtmlParser
+ [x] Parse 
+ [x] Exception 
+
+PhpUnit\App\Parsers\Css
+ [x] Process 
+
+PhpUnit\App\Parsers\Regex
+ [ ] Something
+
+PhpUnit\App\Parsers\Xpath
+ [x] Process 
+
+PhpUnit\App\RoutesLoader
+ [ ] Bind routes to controllers
+
+PhpUnit\App\Services\DatabaseServiceContainer
+ [x] Get endpoint service
+ [x] Get website service
+ [x] Get selector service
+ [x] Get connection
+
+PhpUnit\App\Services\EndpointService
+ [x] Get one by name
+ [x] Get one
+ [x] Get all
+
+PhpUnit\App\Services\SelectorService
+ [x] Get one
+ [x] Get all
+
+PhpUnit\App\Services\WebsiteService
+ [x] Get one by name
+ [x] Get one
+ [x] Get all
+
+PhpUnit\App\SourceRetrieval\Curl
+ [x] Retrieve source without cache
+ [x] Retrieve source with cache
+

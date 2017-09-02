@@ -12,12 +12,12 @@ use Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers DatabaseServiceContainer
+ * @covers \App\Services\DatabaseServiceContainer
  */
 final class DatabaseServiceContainerTest extends TestCase
 {
     /**
-     * @covers DatabaseServiceContainer::getEndPointService()
+     * @covers \App\Services\DatabaseServiceContainer::getEndPointService()
      */
     public function testGetEndpointService(): void
     {
@@ -27,7 +27,7 @@ final class DatabaseServiceContainerTest extends TestCase
     }
 
     /**
-     * @covers DatabaseServiceContainer::getWebsiteService()
+     * @covers \App\Services\DatabaseServiceContainer::getWebsiteService()
      */
     public function testGetWebsiteService(): void
     {
@@ -37,7 +37,7 @@ final class DatabaseServiceContainerTest extends TestCase
     }
 
     /**
-     * @covers DatabaseServiceContainer::getSelectorService()
+     * @covers \App\Services\DatabaseServiceContainer::getSelectorService()
      */
     public function testGetSelectorService(): void
     {
@@ -47,7 +47,7 @@ final class DatabaseServiceContainerTest extends TestCase
     }
 
     /**
-     * @covers DatabaseServiceContainer::getConnection()
+     * @covers \App\Services\DatabaseServiceContainer::getConnection()
      */
     public function testGetConnection(): void
     {

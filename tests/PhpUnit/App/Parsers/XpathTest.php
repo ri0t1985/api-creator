@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Sunra\PhpSimple\HtmlDomParser;
 
 /**
- * @covers Xpath
+ * @covers \App\Parsers\Xpath
  */
 final class XpathTest extends TestCase
 {
@@ -18,7 +18,7 @@ final class XpathTest extends TestCase
      * @param string $selector
      * @param array $expected
      *
-     * @covers Xpath::process()
+     * @covers \App\Parsers\Xpath
      *
      * @dataProvider processProvider
      */
@@ -43,7 +43,7 @@ final class XpathTest extends TestCase
     }
 
     /**
-     * @see XpathTest::testProcess()
+     * @see \App\Parsers\Xpath::testProcess()
      *
      * @return array
      */

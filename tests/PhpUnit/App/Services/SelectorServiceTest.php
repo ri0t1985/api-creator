@@ -10,12 +10,12 @@ use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers SelectorService
+ * @covers \App\Services\SelectorService
  */
 final class SelectorServiceTest extends TestCase
 {
     /**
-     * @covers SelectorService::getOne()
+     * @covers \App\Services\SelectorService::getOne()
      */
     public function testGetOne(): void
     {
@@ -25,7 +25,7 @@ final class SelectorServiceTest extends TestCase
     }
 
     /**
-     * @covers SelectorService::getAll()
+     * @covers \App\Services\SelectorService::getAll()
      */
     public function testGetAll(): void
     {

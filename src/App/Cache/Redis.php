@@ -61,7 +61,7 @@ class Redis implements CacheInterface
     /**
      * @return Client
      */
-    protected function getClient()
+    public function getClient()
     {
         return $this->client;
     }

@@ -9,12 +9,12 @@ use App\SourceRetrieval\Curl;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Curl
+ * @covers \App\SourceRetrieval\Curl
  */
 final class CurlTest extends TestCase
 {
     /**
-     * @covers Curl::retrieveSource()
+     * @covers \App\SourceRetrieval\Curl::retrieveSource()
      */
     public function testRetrieveSourceWithoutCache(): void
     {
@@ -25,7 +25,7 @@ final class CurlTest extends TestCase
     }
 
     /**
-     * @covers Curl::retrieveSource()
+     * @covers \App\SourceRetrieval\Curl::retrieveSource()
      */
     public function testRetrieveSourceWithCache(): void
     {

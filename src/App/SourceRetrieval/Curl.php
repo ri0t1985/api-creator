@@ -50,6 +50,9 @@ class Curl implements SourceRetrievalInterface
      *
      * @param string $url
      * @return string
+     *
+     * @codeCoverageIgnore Can not be tested without testing curl internals.
+     *
      * @throws SourceRetrievalException When a curl error occurs
      */
     protected function getSourceThroughCurl($url)
