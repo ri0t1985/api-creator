@@ -17,7 +17,7 @@ final class WebsiteTest extends TestCase
      *
      * @covers \App\Entities\Website
      */
-    public function testWebsite(): void
+    public function testWebsite()
     {
         $website = new Website();
 

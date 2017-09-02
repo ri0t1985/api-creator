@@ -16,7 +16,7 @@ final class CurlTest extends TestCase
     /**
      * @covers \App\SourceRetrieval\Curl::retrieveSource()
      */
-    public function testRetrieveSourceWithoutCache(): void
+    public function testRetrieveSourceWithoutCache()
     {
         $url = 'test.com';
         $curl = new CurlMock();
@@ -27,7 +27,7 @@ final class CurlTest extends TestCase
     /**
      * @covers \App\SourceRetrieval\Curl::retrieveSource()
      */
-    public function testRetrieveSourceWithCache(): void
+    public function testRetrieveSourceWithCache()
     {
         $url = 'test.com';
         $cachedHtml = '<html><body>Hello from the cache!</body></html>';

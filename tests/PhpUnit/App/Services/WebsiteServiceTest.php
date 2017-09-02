@@ -17,7 +17,7 @@ final class WebsiteServiceTest extends TestCase
     /**
      * @covers \App\Services\WebsiteService::getOneByName()
      */
-    public function testGetOneByName(): void
+    public function testGetOneByName()
     {
         $websiteService = new WebsiteService($this->getEntityManagerMock());
 
@@ -27,7 +27,7 @@ final class WebsiteServiceTest extends TestCase
     /**
      * @covers \App\Services\WebsiteService::getOne()
      */
-    public function testGetOne(): void
+    public function testGetOne()
     {
         $websiteService = new WebsiteService($this->getEntityManagerMock());
 
@@ -37,7 +37,7 @@ final class WebsiteServiceTest extends TestCase
     /**
      * @covers \App\Services\WebsiteService::getAll()
      */
-    public function testGetAll(): void
+    public function testGetAll()
     {
         $websiteService = new WebsiteService($this->getEntityManagerMock());
 

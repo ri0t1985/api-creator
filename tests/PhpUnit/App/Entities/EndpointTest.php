@@ -19,7 +19,7 @@ final class EndpointTest extends TestCase
      *
      * @covers \App\Entities\Endpoint
      */
-    public function testEndpoint(): void
+    public function testEndpoint()
     {
         $endpoint = new Endpoint();
 

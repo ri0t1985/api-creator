@@ -27,11 +27,13 @@ final class DefaultControllerTest extends TestCase
      * @param $html
      * @param $expected
      */
-    public function testProcessEndpoint($selectors, $html, $expected): void
+    public function testProcessEndpoint($selectors, $html, $expected)
     {
         /** @var Curl|\PHPUnit_Framework_MockObject_MockObject  $sourceRetrievalMock */
         $sourceRetrievalMock = $this->createMock(Curl::class);
-        $sourceRetrievalMock->expects($this->any())->method('retrieveSource')->willReturn($html);
+        $sourceRetrievalMock->expects($this->any())
+            ->method('retrieveSource')
+            ->willReturn($html);
 
         /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject  $databaseMock */
         $databaseMock = $this->createMock(DatabaseServiceContainer::class);
@@ -52,9 +54,18 @@ final class DefaultControllerTest extends TestCase
 
         $response = $controller->processEndPoint($website, $endpoint);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertInstanceOf(
+            JsonResponse::class,
+            $response,
+            'Expected to receive a JSON response, got something else instead'
+        );
 
-        $this->assertEquals(new JsonResponse($expected), $response);
+        $expected = new JsonResponse($expected);
+        $this->assertEquals(
+            $expected,
+            $response,
+            'Expected to receive a JSON response, got something else instead'
+        );
     }
 
 

@@ -24,7 +24,7 @@ final class RequestControllerTest extends TestCase
     /**
      * @covers \App\Controllers\RequestController::info()
      */
-    public function testInfo(): void
+    public function testInfo()
     {
         /** @var Curl|\PHPUnit_Framework_MockObject_MockObject  $sourceRetrievalMock */
 
