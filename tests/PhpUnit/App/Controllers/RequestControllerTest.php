@@ -26,10 +26,11 @@ final class RequestControllerTest extends TestCase
      *
      * @dataProvider  infoProvider
      *
-     * @param $databaseMock
-     * @param $expected
+     * @param object $databaseMock
+     * @param array $expected
+     * @param integer $code
      */
-    public function testInfo($databaseMock, $expected)
+    public function testInfo($databaseMock, $expected, $code)
     {
         /** @var Curl|\PHPUnit_Framework_MockObject_MockObject  $sourceRetrievalMock */
 
@@ -47,7 +48,7 @@ final class RequestControllerTest extends TestCase
 
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals($expected, $response);
+        $this->assertEquals(new JsonResponse($expected, $code), $response);
     }
 
 
@@ -118,9 +119,9 @@ final class RequestControllerTest extends TestCase
         $noEndpointMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock3);
 
         return [
-            [$databaseMock,        new JsonResponse($data, 200)],
-            [$noWebsiteMock,       new JsonResponse(['No endpoint found for route: test/test'], 404)],
-            [$noEndpointMock,      new JsonResponse(['No endpoint found for route: test/test'], 404)],
+            [$databaseMock,        $data, 200],
+            [$noWebsiteMock,      ['No endpoint found for route: test/test'], 404],
+            [$noEndpointMock,     ['No endpoint found for route: test/test'], 404],
 
         ];
     }
