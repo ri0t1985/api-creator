@@ -272,7 +272,7 @@ class RequestController
             $errors['website_url'] = 'Should be specified';
         }
 
-        if (empty($request->get('endpoints'))) {
+        if (empty($request->get('endpoints', null))) {
             $errors['endpoints'] = 'Should specify atleast one endpoint';
         }
 
@@ -288,21 +288,24 @@ class RequestController
                 continue;
             }
 
-            if (empty($end_point_request['selectors'])) {
+            if (!isset($end_point_request['selectors']) || empty($end_point_request['selectors'])) {
                 $errors['endpoints'][$key]['selectors'] = 'Should atleast specify one selector';
             }
-            foreach ($end_point_request['selectors'] as $k => $selector_request) {
-                if (empty($selector_request['alias']) && !is_string($selector_request['alias'])) {
-                    $errors['endpoints'][$key]['selectors'][$k] = 'Cannot be empty and should be string!';
-                }
-                if (empty($selector_request['selector']) && !is_string($selector_request['selector'])) {
-                    $errors['endpoints'][$key]['selectors'][$k] = 'Cannot be empty and should be string!';
-                }
+            else
+            {
+                foreach ($end_point_request['selectors'] as $k => $selector_request) {
+                    if (!isset($selector_request['alias']) || empty($selector_request['alias']) && !is_string($selector_request['alias'])) {
+                        $errors['endpoints'][$key]['selectors'][$k]['alias'] = 'Cannot be empty and should be string!';
+                    }
+                    if (!isset($selector_request['selector']) || empty($selector_request['selector']) && !is_string($selector_request['selector'])) {
+                        $errors['endpoints'][$key]['selectors'][$k]['selector'] = 'Cannot be empty and should be string!';
+                    }
 
-                if (isset($selector_request['type']) && !in_array($selector_request['type'], [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH, '']))
-                {
-                    $errors['endpoints'][$key]['selectors'][$k] = 'Type should be one of the following: '
-                        . implode(',', [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH]);
+                    if (isset($selector_request['type']) && !in_array($selector_request['type'], [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH, '']))
+                    {
+                        $errors['endpoints'][$key]['selectors'][$k]['type'] = 'Type should be one of the following: '
+                            . implode(',', [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH]);
+                    }
                 }
             }
         }
