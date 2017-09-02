@@ -22,14 +22,37 @@ final class RequestControllerTest extends TestCase
 {
 
     /**
-     * @covers \App\Controllers\RequestController::info()
+     * @covers        \App\Controllers\RequestController::info()
+     *
+     * @dataProvider  infoProvider
+     *
+     * @param $databaseMock
+     * @param $expected
      */
-    public function testInfo()
+    public function testInfo($databaseMock, $expected)
     {
         /** @var Curl|\PHPUnit_Framework_MockObject_MockObject  $sourceRetrievalMock */
 
         $sourceRetrievalMock = $this->createMock(Curl::class);
 
+
+        $controller = new RequestController(
+            $databaseMock,
+            $sourceRetrievalMock
+        );
+
+        $websiteName = 'test';
+        $endpointName = 'test';
+        $response =  $controller->info($websiteName, $endpointName);
+
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals($expected, $response);
+    }
+
+
+    public function infoProvider()
+    {
         /** @var Website|\PHPUnit_Framework_MockObject_MockObject $website */
         $website = $this->createMock(Website::class);
         $website->expects($this->any())->method('getName')->willReturn('test');
@@ -56,14 +79,6 @@ final class RequestControllerTest extends TestCase
         $databaseMock->expects($this->any())->method('getWebsiteService')->willReturn($websiteServiceMock);
         $databaseMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock);
 
-        $controller = new RequestController(
-            $databaseMock,
-            $sourceRetrievalMock
-        );
-
-        $websiteName = 'test';
-        $endpointName = 'test';
-        $response =  $controller->info($websiteName, $endpointName);
 
         $selectors = [$selector];
         $selectorInfo = [];
@@ -74,13 +89,39 @@ final class RequestControllerTest extends TestCase
             $selectorInfo[$key]['selector'] = $selector->getSelector();
         }
         $data = [
-            'website_name'  => $websiteName,
+            'website_name'  => 'test',
             'website_url'   => $website->getUrl(),
-            'endpoint_name' => $endpointName,
+            'endpoint_name' => 'test',
             'selectors'     => $selectorInfo
         ];
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(new JsonResponse($data), $response);
+
+        // website will be empty
+        $websiteServiceMock2 = $this->createMock(WebsiteService::class);
+        $websiteServiceMock2->expects($this->any())->method('getOneByName')->willReturn(null);
+        $endpointServiceMock2 = $this->createMock(EndPointService::class);
+        $endpointServiceMock2->expects($this->any())->method('getOneByName')->willReturn($endpoint);
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject  $databaseMock */
+        $noWebsiteMock = $this->createMock(DatabaseServiceContainer::class);
+        $noWebsiteMock->expects($this->any())->method('getWebsiteService')->willReturn($websiteServiceMock2);
+        $noWebsiteMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock2);
+
+
+        // website will be empty
+        $websiteServiceMock3 = $this->createMock(WebsiteService::class);
+        $websiteServiceMock3->expects($this->any())->method('getOneByName')->willReturn($website);
+        $endpointServiceMock3 = $this->createMock(EndPointService::class);
+        $endpointServiceMock3->expects($this->any())->method('getOneByName')->willReturn(null);
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject  $databaseMock */
+        $noEndpointMock = $this->createMock(DatabaseServiceContainer::class);
+        $noEndpointMock->expects($this->any())->method('getWebsiteService')->willReturn($websiteServiceMock3);
+        $noEndpointMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock3);
+
+        return [
+            [$databaseMock,        new JsonResponse($data, 200)],
+            [$noWebsiteMock,       new JsonResponse(['No endpoint found for route: test/test'], 404)],
+            [$noEndpointMock,      new JsonResponse(['No endpoint found for route: test/test'], 404)],
+
+        ];
     }
 }
