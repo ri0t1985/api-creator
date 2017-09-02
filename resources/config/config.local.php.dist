@@ -10,3 +10,13 @@ $app['db.options'] = array(
     "dbname"   => "prod_db",
     "host"     => "prod_host",
 );
+
+/**
+ * Cache
+ */
+$app['cache.class'] = null;
+$app['cache.options'] = [
+    "scheme" => "tcp",
+    "host"   => "127.0.0.1",
+    "port"   => 6379,
+];
