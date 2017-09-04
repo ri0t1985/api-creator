@@ -160,14 +160,15 @@ class RequestController
     /**
      * // TODO: implement this call.
      *
+     * @param $websiteName
+     * @param $endpointName
      * @param Request $request
-     * @param string $id (uuid)
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update($websiteName, $endpointName, Request $request)
     {
         $this->validateUpdateRequest($request);
-        return new JsonResponse(['successfully updated route with id: ' . $id], 200);
+        return new JsonResponse(['successfully updated route : ' . $websiteName . '/' . $endpointName], 200);
     }
 
     /**
@@ -193,8 +194,11 @@ class RequestController
         try {
             $this->databaseServiceContainer->getConnection()->beginTransaction();
 
-            foreach ($endpoint->getSelectors() as $selector) {
-                $entityManager->remove($selector);
+            if (null !== $endpoint->getSelectors())
+            {
+                foreach ($endpoint->getSelectors() as $selector) {
+                    $entityManager->remove($selector);
+                }
             }
 
             $entityManager->remove($endpoint);

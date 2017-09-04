@@ -12,6 +12,8 @@ use App\Services\DatabaseServiceContainer;
 use App\Services\EndPointService;
 use App\Services\WebsiteService;
 use App\SourceRetrieval\Curl;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -235,6 +237,201 @@ final class RequestControllerTest extends TestCase
             ]]]]], 400],
             [new Request([], $dataSet5), ['endpoints' => 'You can only test one endpoint at a time!'], 400],
 
+        ];
+    }
+
+    /**
+     * @dataProvider updateProvider
+     *
+     * @param Request $request
+     * @param array $expected
+     * @param integer $code
+     */
+    public function testUpdate($request, $expected, $code)
+    {
+        /** @var Curl|\PHPUnit_Framework_MockObject_MockObject $sourceRetrievalMock */
+        $sourceRetrievalMock = $this->createMock(Curl::class);
+        $sourceRetrievalMock->expects($this->any())->method('retrieveSource')
+            ->willReturn('<html><body><a class="test">link</a><br/><a class="test">link</a></body></html>');
+
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject $databaseMock */
+        $databaseMock = $this->createMock(DatabaseServiceContainer::class);
+
+        // website will be empty
+        $websiteServiceMock = $this->createMock(WebsiteService::class);
+        $websiteServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
+        $endpointServiceMock = $this->createMock(EndPointService::class);
+        $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
+
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject $databaseMock */
+        $databaseMock->expects($this->any())->method('getWebsiteService')->willReturn($websiteServiceMock);
+        $databaseMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock);
+
+
+        $controller = new RequestController(
+            $databaseMock,
+            $sourceRetrievalMock
+        );
+
+        $response = $controller->update('test', 'test', $request);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(new JsonResponse($expected, $code), $response);
+    }
+
+    /**
+     * @see RequestControllerTest::testUpdate()
+     */
+    public function updateProvider()
+    {
+        $dataSet1 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => 'test',
+                'selectors' => [[
+                    'alias' => 'test',
+                    'selector' => 'h5'
+                ]],
+            ]],
+        ];
+
+        $dataSet2 = [
+            'website_name' => '',
+            'website_url' => '',
+            'endpoints' => [],
+        ];
+
+        $dataSet3 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => 'test',
+
+            ]],
+        ];
+
+        $dataSet4 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => 'test',
+                'selectors' => [[
+                    'type' => 'wrong'
+                ]],
+            ]],
+        ];
+
+        $dataSet5 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => 'test',
+                'selectors' => [[
+                    'alias' => 'test',
+                    'selector' => 'h5'
+                ]],
+            ],
+                [
+                    'name' => 'test2',
+                    'selectors' => [[
+                        'alias' => 'test',
+                        'selector' => 'h5'
+                    ]],
+                ]],
+        ];
+
+        return [
+            [new Request([], $dataSet1), ["successfully updated route : test/test"], 200],
+            [new Request([], $dataSet2), ["successfully updated route : test/test"], 200],
+            [new Request([], $dataSet3), ["successfully updated route : test/test"], 200],
+            [new Request([], $dataSet4), ["successfully updated route : test/test"], 200],
+            [new Request([], $dataSet5), ["successfully updated route : test/test"], 200],
+        ];
+    }
+
+    /**
+     * @dataProvider deleteProvider
+     *
+     * @param $websiteExists
+     * @param $endpointExists
+     * @param $expectedResult
+     * @param $code
+     */
+    public function testDelete($websiteExists, $endpointExists, $expectedResult, $code, $throwException)
+    {
+        /** @var Curl|\PHPUnit_Framework_MockObject_MockObject $sourceRetrievalMock */
+        $sourceRetrievalMock = $this->createMock(Curl::class);
+
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject $databaseMock */
+        $databaseMock = $this->createMock(DatabaseServiceContainer::class);
+
+        $connection = $this
+            ->getMockBuilder(Connection::class)
+            ->setMethods(['beginTransaction', 'commit', 'rollBack'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->any())->method('beginTransaction')->willReturn(true);
+        $connection->expects($this->any())->method('commit')->willReturn(true);
+        $connection->expects($this->any())->method('rollBack')->willReturn(true);
+
+        $databaseMock->expects($this->any())->method('getConnection')->willReturn($connection);
+
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->any())->method('getConnection')->willReturn($connection);
+
+        if ($throwException) {
+            $entityManager->expects($this->any())->method('remove')->will($this->throwException(new \Exception('test_message')));
+        }
+
+        // website will be empty
+        $websiteServiceMock = $this->getMockBuilder(WebsiteService::class)
+            ->setMethods(['getEntityManager', 'getOneByName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $websiteServiceMock->expects($this->any())->method('getEntityManager')->willReturn($entityManager);
+
+        if ($websiteExists) {
+            $website = $this->createMock(Website::class);
+            $websiteServiceMock->expects($this->any())->method('getOneByName')->willReturn($website);
+        } else {
+            $websiteServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
+        }
+        $endpointServiceMock = $this->createMock(EndPointService::class);
+
+        if ($endpointExists) {
+            $endpoint = $this->createMock(Endpoint::class);
+            $endpoint->expects($this->any())->method('getSelectors')->willReturn(
+                [$this->createMock(Selector::class)]);
+            $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn($endpoint);
+        } else {
+            $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
+        }
+
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject $databaseMock */
+        $databaseMock->expects($this->any())->method('getWebsiteService')->willReturn($websiteServiceMock);
+        $databaseMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock);
+
+
+        $controller = new RequestController(
+            $databaseMock,
+            $sourceRetrievalMock
+        );
+
+        $response = $controller->delete('test', 'test');
+
+        $this->assertEquals($expectedResult, $response->getContent());
+        $this->assertEquals($code, $response->getStatusCode());
+    }
+
+    public function deleteProvider()
+    {
+        return [
+            [false, false, '["No endpoint found for route: test\/test"]', 404, false],
+            [true, false, '["No endpoint found for route: test\/test"]', 404, false],
+            [false, true, '["No endpoint found for route: test\/test"]', 404, false],
+            [true, true, '["successfully deleted route with name: test\/test"]', 200, false],
+            [true, true, '["Failed to delete route with name: test\/test: test_message"]', 500, true],
         ];
     }
 }

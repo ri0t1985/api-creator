@@ -76,9 +76,9 @@ class RoutesLoader
             return $controller->test($request);
         });
 
-        $api->put('/update/{id}',function(Request $request, $id) use ($databaseServiceContainer, $sourceRetrievalService){
+        $api->put('/update/{websiteName}/{endpointName}',function($websiteName, $endpointName, Request $request) use ($databaseServiceContainer, $sourceRetrievalService){
             $controller = new RequestController($databaseServiceContainer, $sourceRetrievalService);
-            return $controller->update($request, $id);
+            return $controller->update($websiteName, $endpointName, $request);
         });
 
         $api->delete('/delete/{websiteName}/{endpointName}',function($websiteName, $endpointName) use ($databaseServiceContainer, $sourceRetrievalService){
