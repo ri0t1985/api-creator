@@ -7,6 +7,7 @@ namespace PhpUnit\App\Controllers;
 use App\Controllers\RequestController;
 use App\Entities\Endpoint;
 use App\Entities\Selector;
+use App\Entities\SelectorOption;
 use App\Entities\Website;
 use App\Services\DatabaseServiceContainer;
 use App\Services\EndPointService;
@@ -48,8 +49,8 @@ final class RequestControllerTest extends TestCase
 
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(new JsonResponse($expected, $code), $response);
-    }
+        $this->assertEquals($code, $response->getStatusCode());
+        $this->assertEquals($expected, json_decode($response->getContent(), true));    }
 
 
     public function infoProvider()
@@ -63,6 +64,7 @@ final class RequestControllerTest extends TestCase
         $selector = $this->createMock(Selector::class);
         $selector->expects($this->any())->method('getSelector')->willReturn('selector');
         $selector->expects($this->any())->method('getAlias')->willReturn('alias');
+        $selector->expects($this->any())->method('getOptions')->willReturn([]);
 
         /** @var Endpoint|\PHPUnit_Framework_MockObject_MockObject $endpoint */
         $endpoint = $this->createMock(Endpoint::class);
@@ -161,8 +163,10 @@ final class RequestControllerTest extends TestCase
         $response = $controller->test($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(new JsonResponse($expected, $code), $response);
-    }
+        $this->assertEquals($code, $response->getStatusCode());
+        $content = $response->getContent();
+        $json_content = json_decode($content, true);
+        $this->assertEquals($expected, $json_content);    }
 
     /**
      * @see RequestControllerTest::testTest()
@@ -276,7 +280,8 @@ final class RequestControllerTest extends TestCase
         $response = $controller->update('test', 'test', $request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(new JsonResponse($expected, $code), $response);
+        $this->assertEquals($code, $response->getStatusCode());
+        $this->assertEquals($expected, json_decode($response->getContent(), true));
     }
 
     /**
@@ -342,11 +347,11 @@ final class RequestControllerTest extends TestCase
         ];
 
         return [
-            [new Request([], $dataSet1), ["successfully updated route : test/test"], 200],
-            [new Request([], $dataSet2), ["successfully updated route : test/test"], 200],
-            [new Request([], $dataSet3), ["successfully updated route : test/test"], 200],
-            [new Request([], $dataSet4), ["successfully updated route : test/test"], 200],
-            [new Request([], $dataSet5), ["successfully updated route : test/test"], 200],
+            [new Request([], $dataSet1), ['successfully updated route : test/test'], 200],
+            [new Request([], $dataSet2), ['successfully updated route : test/test'], 200],
+            [new Request([], $dataSet3), ['successfully updated route : test/test'], 200],
+            [new Request([], $dataSet4), ['successfully updated route : test/test'], 200],
+            [new Request([], $dataSet5), ['successfully updated route : test/test'], 200],
         ];
     }
 
@@ -400,9 +405,15 @@ final class RequestControllerTest extends TestCase
         $endpointServiceMock = $this->createMock(EndPointService::class);
 
         if ($endpointExists) {
+
+            $selector = $this->createMock(Selector::class);
+            $selector->expects($this->any())->method('getOptions')->willReturn(
+                [$this->createMock(SelectorOption::class)]
+            );
+
             $endpoint = $this->createMock(Endpoint::class);
             $endpoint->expects($this->any())->method('getSelectors')->willReturn(
-                [$this->createMock(Selector::class)]);
+                [$selector]);
             $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn($endpoint);
         } else {
             $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
@@ -420,18 +431,18 @@ final class RequestControllerTest extends TestCase
 
         $response = $controller->delete('test', 'test');
 
-        $this->assertEquals($expectedResult, $response->getContent());
+        $this->assertEquals($expectedResult, json_decode($response->getContent(), true));
         $this->assertEquals($code, $response->getStatusCode());
     }
 
     public function deleteProvider()
     {
         return [
-            [false, false, '["No endpoint found for route: test\/test"]', 404, false],
-            [true, false, '["No endpoint found for route: test\/test"]', 404, false],
-            [false, true, '["No endpoint found for route: test\/test"]', 404, false],
-            [true, true, '["successfully deleted route with name: test\/test"]', 200, false],
-            [true, true, '["Failed to delete route with name: test\/test: test_message"]', 500, true],
+            [false, false, ["No endpoint found for route: test/test"], 404, false],
+            [true, false,  ["No endpoint found for route: test/test"], 404, false],
+            [false, true,  ["No endpoint found for route: test/test"], 404, false],
+            [true, true,   ["successfully deleted route with name: test/test"], 200, false],
+            [true, true,   ["Failed to delete route with name: test/test: test_message"], 500, true],
         ];
     }
 }
