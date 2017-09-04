@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Entities;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity @Table(name="endpoints")
  **/
 class Endpoint
 {
+
+
     /**
      * @Id
      * @Column(name="id", type="guid")
@@ -41,6 +44,14 @@ class Endpoint
      * @var Website
      **/
     protected $website;
+
+    /**
+     * Endpoint constructor.
+     */
+    public function __construct()
+    {
+        $this->selectors = new ArrayCollection();
+    }
 
     /**
      * @return string

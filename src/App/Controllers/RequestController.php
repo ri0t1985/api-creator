@@ -21,7 +21,7 @@ class RequestController
     /** @var DatabaseServiceContainer */
     protected $databaseServiceContainer;
 
-    /** @var SourceRetrievalInterface  */
+    /** @var SourceRetrievalInterface */
     protected $sourceRetrievalService;
 
     /**
@@ -32,7 +32,7 @@ class RequestController
     public function __construct(DatabaseServiceContainer $databaseServiceContainer, SourceRetrievalInterface $sourceRetrievalService)
     {
         $this->databaseServiceContainer = $databaseServiceContainer;
-        $this->sourceRetrievalService   = $sourceRetrievalService;
+        $this->sourceRetrievalService = $sourceRetrievalService;
     }
 
     /**
@@ -78,7 +78,7 @@ class RequestController
                 foreach ($end_point_request['selectors'] as $selector_request) {
 
                     $selector = new Selector();
-                    $type = (isset($selector_request['type'])) ? $selector_request['type'] :  Selector::TYPE_CSS;
+                    $type = (isset($selector_request['type'])) ? $selector_request['type'] : Selector::TYPE_CSS;
 
                     $selector
                         ->setAlias($selector_request['alias'])
@@ -96,7 +96,7 @@ class RequestController
 
         } catch (\Exception $e) {
             $this->databaseServiceContainer->getConnection()->rollBack();
-            return new JsonResponse(['An error occurred while handling your request: ' . $e->getMessage()], 200);
+            return new JsonResponse(['An error occurred while handling your request: ' . $e->getMessage()], 500);
         }
 
         return new JsonResponse($routesCreated, 200);
@@ -138,7 +138,7 @@ class RequestController
             foreach ($end_point_request['selectors'] as $selector_request) {
 
                 $selector = new Selector();
-                $type = (isset($selector_request['type'])) ? $selector_request['type'] :  Selector::TYPE_CSS;
+                $type = (isset($selector_request['type'])) ? $selector_request['type'] : Selector::TYPE_CSS;
 
                 $selector
                     ->setAlias($selector_request['alias'])
@@ -194,11 +194,12 @@ class RequestController
         try {
             $this->databaseServiceContainer->getConnection()->beginTransaction();
 
-            if (null !== $endpoint->getSelectors())
-            {
-                foreach ($endpoint->getSelectors() as $selector) {
-                    $entityManager->remove($selector);
+            foreach ($endpoint->getSelectors() as $selector) {
+
+                foreach ($selector->getOptions() as $option) {
+                    $entityManager->remove($option);
                 }
+                $entityManager->remove($selector);
             }
 
             $entityManager->remove($endpoint);
@@ -211,6 +212,8 @@ class RequestController
                 $entityManager->remove($website);
                 $entityManager->flush($website);
             }
+
+            // TODO: remove endpoint options;
 
             $this->databaseServiceContainer->getConnection()->commit();
         } catch (\Exception $e) {
@@ -242,18 +245,21 @@ class RequestController
         }
 
         $selectorInfo = [];
-        foreach ($endpoint->getSelectors() as $key => $selector)
-        {
-            $selectorInfo[$key]['alias']   = $selector->getAlias();
-            $selectorInfo[$key]['type']     = $selector->getType();
+        foreach ($endpoint->getSelectors() as $key => $selector) {
+            $selectorInfo[$key]['alias'] = $selector->getAlias();
+            $selectorInfo[$key]['type'] = $selector->getType();
             $selectorInfo[$key]['selector'] = $selector->getSelector();
+
+            foreach ($selector->getOptions() as $option) {
+
+            }
         }
 
         return new JsonResponse([
-            'website_name'  => $websiteName,
-            'website_url'   => $website->getUrl(),
+            'website_name' => $websiteName,
+            'website_url' => $website->getUrl(),
             'endpoint_name' => $endpointName,
-            'selectors'     => $selectorInfo
+            'selectors' => $selectorInfo
         ], 200);
     }
 
@@ -281,7 +287,7 @@ class RequestController
         }
 
         foreach ($request->get('endpoints') as $key => $end_point_request) {
-            if (empty($end_point_request['name']) && !is_string($end_point_request['string'])) {
+            if (empty($end_point_request['name']) || !is_string($end_point_request['name'])) {
                 $errors['endpoints'][$key]['name'] = 'Cannot be empty and should be string!';
             }
 
@@ -294,9 +300,7 @@ class RequestController
 
             if (!isset($end_point_request['selectors']) || empty($end_point_request['selectors'])) {
                 $errors['endpoints'][$key]['selectors'] = 'Should atleast specify one selector';
-            }
-            else
-            {
+            } else {
                 foreach ($end_point_request['selectors'] as $k => $selector_request) {
                     if (!isset($selector_request['alias']) || empty($selector_request['alias']) && !is_string($selector_request['alias'])) {
                         $errors['endpoints'][$key]['selectors'][$k]['alias'] = 'Cannot be empty and should be string!';
@@ -305,8 +309,7 @@ class RequestController
                         $errors['endpoints'][$key]['selectors'][$k]['selector'] = 'Cannot be empty and should be string!';
                     }
 
-                    if (isset($selector_request['type']) && !in_array($selector_request['type'], [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH, '']))
-                    {
+                    if (isset($selector_request['type']) && !in_array($selector_request['type'], [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH, ''])) {
                         $errors['endpoints'][$key]['selectors'][$k]['type'] = 'Type should be one of the following: '
                             . implode(',', [Selector::TYPE_CSS, Selector::TYPE_REGEX, Selector::TYPE_XPATH]);
                     }

@@ -50,7 +50,8 @@ final class RequestControllerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals($code, $response->getStatusCode());
-        $this->assertEquals($expected, json_decode($response->getContent(), true));    }
+        $this->assertEquals($expected, json_decode($response->getContent(), true));
+    }
 
 
     public function infoProvider()
@@ -166,7 +167,8 @@ final class RequestControllerTest extends TestCase
         $this->assertEquals($code, $response->getStatusCode());
         $content = $response->getContent();
         $json_content = json_decode($content, true);
-        $this->assertEquals($expected, $json_content);    }
+        $this->assertEquals($expected, $json_content);
+    }
 
     /**
      * @see RequestControllerTest::testTest()
@@ -439,10 +441,171 @@ final class RequestControllerTest extends TestCase
     {
         return [
             [false, false, ["No endpoint found for route: test/test"], 404, false],
-            [true, false,  ["No endpoint found for route: test/test"], 404, false],
-            [false, true,  ["No endpoint found for route: test/test"], 404, false],
-            [true, true,   ["successfully deleted route with name: test/test"], 200, false],
-            [true, true,   ["Failed to delete route with name: test/test: test_message"], 500, true],
+            [true, false, ["No endpoint found for route: test/test"], 404, false],
+            [false, true, ["No endpoint found for route: test/test"], 404, false],
+            [true, true, ["successfully deleted route with name: test/test"], 200, false],
+            [true, true, ["Failed to delete route with name: test/test: test_message"], 500, true],
+        ];
+    }
+
+    /**
+     * @dataProvider createProvider
+     *
+     * @param Request $request
+     * @param bool $websiteExists
+     * @param bool $endpointExists
+     * @param string $expectedResult
+     * @param integer $code
+     * @param bool $throwException
+     */
+    public function testCreate(Request $request, $websiteExists, $endpointExists, $expectedResult, $code, $throwException)
+    {
+        /** @var Curl|\PHPUnit_Framework_MockObject_MockObject $sourceRetrievalMock */
+        $sourceRetrievalMock = $this->createMock(Curl::class);
+
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject $databaseMock */
+        $databaseMock = $this->createMock(DatabaseServiceContainer::class);
+
+        $connection = $this
+            ->getMockBuilder(Connection::class)
+            ->setMethods(['beginTransaction', 'commit', 'rollBack'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->any())->method('beginTransaction')->willReturn(true);
+        $connection->expects($this->any())->method('commit')->willReturn(true);
+        $connection->expects($this->any())->method('rollBack')->willReturn(true);
+
+        $databaseMock->expects($this->any())->method('getConnection')->willReturn($connection);
+
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->any())->method('getConnection')->willReturn($connection);
+
+        if ($throwException) {
+            $entityManager->expects($this->any())->method('persist')->will($this->throwException(new \Exception('test_message')));
+        }
+
+        // website will be empty
+        $websiteServiceMock = $this->getMockBuilder(WebsiteService::class)
+            ->setMethods(['getEntityManager', 'getOneByName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $websiteServiceMock->expects($this->any())->method('getEntityManager')->willReturn($entityManager);
+
+        if ($websiteExists) {
+            $website = $this->createMock(Website::class);
+            $websiteServiceMock->expects($this->any())->method('getOneByName')->willReturn($website);
+        } else {
+            $websiteServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
+        }
+        $endpointServiceMock = $this->createMock(EndPointService::class);
+
+        if ($endpointExists) {
+
+            $selector = $this->createMock(Selector::class);
+            $selector->expects($this->any())->method('getOptions')->willReturn(
+                [$this->createMock(SelectorOption::class)]
+            );
+
+            $endpoint = $this->createMock(Endpoint::class);
+            $endpoint->expects($this->any())->method('getSelectors')->willReturn(
+                [$selector]);
+            $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn($endpoint);
+        } else {
+            $endpointServiceMock->expects($this->any())->method('getOneByName')->willReturn(null);
+        }
+
+        /** @var DatabaseServiceContainer|\PHPUnit_Framework_MockObject_MockObject $databaseMock */
+        $databaseMock->expects($this->any())->method('getWebsiteService')->willReturn($websiteServiceMock);
+        $databaseMock->expects($this->any())->method('getEndpointService')->willReturn($endpointServiceMock);
+
+
+        $controller = new RequestController(
+            $databaseMock,
+            $sourceRetrievalMock
+        );
+
+        $response = $controller->create($request);
+
+        $this->assertEquals($expectedResult, json_decode($response->getContent(), true));
+        $this->assertEquals($code, $response->getStatusCode());
+    }
+
+    public function createProvider()
+    {
+        $dataSet1 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => 'test',
+                'selectors' => [[
+                    'alias' => 'test',
+                    'selector' => 'h5'
+                ]],
+            ]],
+        ];
+
+        $dataSet2 = [
+            'website_name' => '',
+            'website_url' => '',
+            'endpoints' => [],
+        ];
+
+        $dataSet3 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => 'test',
+
+            ]],
+        ];
+
+        $dataSet4 = [
+            'website_name' => 'test',
+            'website_url' => 'test',
+            'endpoints' => [[
+                'name' => '',
+                'selectors' => [[
+                    'type' => 'wrong'
+                ]],
+            ]],
+        ];
+
+        $dataset1_errors = [
+            'website_url'  => 'Should be specified',
+            'website_name' => 'Should be specified',
+            'endpoints'    => 'Should specify atleast one endpoint'];
+
+        return [
+            [new Request([], $dataSet1), true, true,   ['endpoints' => [['selectors' => 'End point already exists!']]], 400, false],
+            [new Request([], $dataSet1), false, false, ['Route successfully created: test/test'], 200, false],
+            [new Request([], $dataSet1), false, false, ['An error occurred while handling your request: test_message'], 500, true],
+            [new Request([], $dataSet1), true, false,  ['An error occurred while handling your request: test_message'], 500, true],
+            [new Request([], $dataSet1), false, true,  ['endpoints' => [['selectors' => 'End point already exists!']]], 400, true],
+
+
+            // should always return the same error, because it will fail during validation
+            [new Request([], $dataSet2), true, true,   $dataset1_errors, 400, false],
+            [new Request([], $dataSet2), false, false, $dataset1_errors, 400, false],
+            [new Request([], $dataSet2), false, false, $dataset1_errors, 400, true],
+            [new Request([], $dataSet2), true, false,  $dataset1_errors, 400, true],
+            [new Request([], $dataSet2), false, true,  $dataset1_errors, 400, true],
+
+            [new Request([], $dataSet3), true, true,   ['endpoints' => [['selectors' => 'End point already exists!']]], 400, false],
+            [new Request([], $dataSet3), false, false, ['endpoints' => [['selectors' => 'Should atleast specify one selector']]], 400, false],
+            [new Request([], $dataSet3), false, false, ['endpoints' => [['selectors' => 'Should atleast specify one selector']]], 400, true],
+            [new Request([], $dataSet3), true, false,  ['endpoints' => [['selectors' => 'Should atleast specify one selector']]], 400, true],
+            [new Request([], $dataSet3), false, true,  ['endpoints' => [['selectors' => 'End point already exists!']]], 400, true],
+
+            [new Request([], $dataSet4), true, true,   ['endpoints' => [['selectors' => 'End point already exists!', 'name' => 'Cannot be empty and should be string!']]], 400, false],
+            [new Request([], $dataSet4), false, false, ['endpoints' => [
+                ['name' => 'Cannot be empty and should be string!',
+                'selectors' => [
+                    [
+                    'alias'    => 'Cannot be empty and should be string!',
+                    'selector' => 'Cannot be empty and should be string!',
+                    'type'     => 'Type should be one of the following: CSS,REGEX,XPATH']]]]], 400, false],
+            [new Request([], $dataSet4), false, true,  ['endpoints' => [['selectors' => 'End point already exists!', 'name' => 'Cannot be empty and should be string!']]], 400, true],
+
         ];
     }
 }

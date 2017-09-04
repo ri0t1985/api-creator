@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entities;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity @Table(name="selectors")
@@ -64,6 +65,14 @@ class Selector
      * @var string[]
      */
     protected $optionsAsArray = [];
+
+    /**
+     * Selector constructor.
+     */
+    public function __construct()
+    {
+        $this->options = new ArrayCollection();
+    }
 
     /**
      * @return string
@@ -173,12 +182,6 @@ class Selector
      */
     protected function getOptionsAsArray()
     {
-        if ($this->getOptions() === null)
-        {
-            $this->optionsAsArray = [];
-            return;
-        }
-
         foreach ($this->getOptions() as $option)
         {
             $this->optionsAsArray[$option->getKey()] = $option->getValue();

@@ -1,5 +1,6 @@
 <?php
 namespace App\Entities;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity @Table(name="websites")
@@ -40,6 +41,11 @@ class Website
      * @var Endpoint[]
      **/
     protected $endpoints;
+
+    public function __construct()
+    {
+        $this->endpoints = new ArrayCollection();
+    }
 
     /**
      * @return string
