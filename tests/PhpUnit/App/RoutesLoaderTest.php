@@ -7,6 +7,7 @@ namespace PhpUnit\App;
 use App\Cache\Redis;
 use App\Entities\Endpoint;
 use App\Entities\Website;
+use App\Exceptions\ConfigurationException;
 use App\Helpers\HtmlParser;
 use App\RoutesLoader;
 use App\Services\DatabaseServiceContainer;
@@ -15,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 use Silex\Application;
 use Silex\Controller;
 use Silex\ControllerCollection;
+use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 
 /**
  * @covers \App\RoutesLoader
@@ -60,6 +63,27 @@ final class RoutesLoaderTest extends TestCase
         $app['controllers_factory']        = $api;
         $app['api.endpoint']               = 'Api';
         $app['api.version']                = 'V1';
+
+        $routesLoader = new RoutesLoader($app);
+        $routesLoader->bindRoutesToControllers();
+    }
+
+    public function testInvalidHtmlClass()
+    {
+        $app = new Application();
+
+        $websiteService = $this->createMock(WebsiteService::class);
+
+        $databaseServiceContainer = $this->createMock(DatabaseServiceContainer::class);
+        $databaseServiceContainer->expects($this->any())->method('getWebsiteService')->willReturn($websiteService);
+
+        $app['database.service_container'] = $databaseServiceContainer;
+        $app['cache.class']                = Redis::class;
+        $app['cache.options']              = [];
+        $app['html.service']               = 'SomeClassThatDoesNotExist';
+
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage('Class for source retrieval does not exist: SomeClassThatDoesNotExist');
 
         $routesLoader = new RoutesLoader($app);
         $routesLoader->bindRoutesToControllers();
