@@ -92,7 +92,7 @@ class RoutesLoader
         });
 
         $api->match('{url}', function(){
-            return new JsonResponse(['The requested end point does not exit', 404]);
+            return new JsonResponse(['error' => 'The requested end point does not exit'], 404);
         })->assert('url', '.+');
 
         $this->app->mount($this->app["api.endpoint"].'/'.$this->app["api.version"], $api);
