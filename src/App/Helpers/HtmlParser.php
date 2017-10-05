@@ -9,6 +9,8 @@ use App\Parsers;
 
 class HtmlParser
 {
+    protected $infoElements = [];
+
     /**
      * @param Selector[] $selectors
      * @param string $htmlSource
@@ -47,6 +49,7 @@ class HtmlParser
 
             foreach ($parser->process($selector->getSelector()) as $key => $element) {
 
+
                 $property = $selector->getOption(SelectorOption::OPTION_PROPERTY, false);
                 if ($property)
                 {
@@ -69,10 +72,20 @@ class HtmlParser
                     $value = trim($value);
                 }
 
-                $records[$key][$selector->getAlias()] = $value;
+                if ($selector->getOption(SelectorOption::OPTION_INFO, false)) {
+                    $this->infoElements[$key][$selector->getAlias()] = $value;
+
+                } else {
+                    $records[$key][$selector->getAlias()] = $value;
+                }
             }
         }
 
         return $records;
+    }
+
+    public function getInfoElements()
+    {
+        return $this->infoElements;
     }
 }

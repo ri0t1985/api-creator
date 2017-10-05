@@ -11,6 +11,7 @@ class SelectorOption
     const OPTION_PROPERTY    = 'property';
     const OPTION_STRIP_HTML  = 'strip_html';
     const OPTION_TRIM        = 'trim';
+    const OPTION_INFO        = 'info';
 
     /**
      *
@@ -104,6 +105,4 @@ class SelectorOption
         $this->value = $value;
         return $this;
     }
-
-
 }

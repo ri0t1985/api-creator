@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Entities\Endpoint;
 use App\Entities\Website;
+use App\Exceptions\SourceRetrievalException;
 use App\Helpers\HtmlParser;
 use App\Services\DatabaseServiceContainer;
 use App\SourceRetrieval\SourceRetrievalInterface;
@@ -26,6 +27,8 @@ class DefaultController
 
     /** @var SourceRetrievalInterface */
     protected $sourceRetrievalService;
+
+    protected $infoElements = [];
 
     /**
      * DefaultController constructor.
@@ -53,6 +56,7 @@ class DefaultController
      */
     public function search(Website $website, Endpoint $endpoint, string $propertyName, string $searchValue): JsonResponse
     {
+        $startTime = microtime();
         if (empty($propertyName) || empty($searchValue))
         {
             return new JsonResponse(
@@ -73,8 +77,20 @@ class DefaultController
             return $searchPropertyHasSearchedValue;
         });
 
+        $result = [
+            'info' => [
+                'website_url' => $website->getUrl(),
+                'endpoint'    => $endpoint->getName(),
+                'searchValue' => $searchValue,
+                'processingTime' => (microtime() - $startTime)
+            ],
+            'result' => $searchResults->toArray(),
+        ];
+
+        $this->addInfoValuesToResult($result);
+
         return new JsonResponse(
-            $searchResults->toArray(),
+            $result,
             200,
             ['Content-Type' => 'application/json']
         );
@@ -105,9 +121,24 @@ class DefaultController
      */
     public function processEndPoint(Website $website, Endpoint $endpoint): JsonResponse
     {
+        $startTime = microtime();
+
         $websiteApiData = $this->getWebsiteApiData($website, $endpoint);
 
-        return new JsonResponse($websiteApiData->toArray(), 200, ['Content-Type' => 'application/json']);
+        $result = [
+            'info' => [
+                'website_url' => $website->getUrl(),
+                'endpoint'    => $endpoint->getName(),
+//                'processingTime' => (microtime() - $startTime)
+            ],
+            'result' => $websiteApiData->toArray(),
+        ];
+
+        $this->addInfoValuesToResult($result);
+
+        return new JsonResponse($result,
+            200,
+            ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -120,11 +151,21 @@ class DefaultController
     protected function parseHtml(Website $website, Endpoint $endpoint)
     {
 
-        $html = $this->getHtmlSource($website->getUrl());
-        $htmlParser = new HtmlParser();
-        $records = $htmlParser->parse($endpoint->getSelectors(), $html);
+        try
+        {
+            $html = $this->getHtmlSource($website->getUrl());
+            $htmlParser = new HtmlParser();
+            $records = $htmlParser->parse($endpoint->getSelectors(), $html);
+        }
+        catch (SourceRetrievalException $e)
+        {
+            // TODO: proper error reporting
+            $records = [];
+            $htmlParser = new HtmlParser();
+        }
 
         $this->websiteApiData = collect($records);
+        $this->infoElements = $htmlParser->getInfoElements();
     }
 
     /**
@@ -137,5 +178,12 @@ class DefaultController
     protected function getHtmlSource(string $url): string
     {
         return $this->sourceRetrievalService->retrieveSource($url);
+    }
+
+    protected function addInfoValuesToResult(array $result)
+    {
+        foreach($this->infoElements as $key => $value) {
+            $result['info'][$key] = $value;
+        }
     }
 }
