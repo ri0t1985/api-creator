@@ -14,7 +14,7 @@ export APP_PORT=${APP_PORT:-80}
 export DB_PORT=${DB_PORT:-3306}
 export DB_ROOT_PASS=${DB_ROOT_PASS:-root}
 export DB_HOST=${DB_HOST:-db}
-export DB_NAME=${DB_NAME:-kate}
+export DB_NAME=${DB_NAME:-api}
 export DB_USER=${DB_USER:-root}
 export DB_PASS=${DB_PASS:-root}
 
@@ -46,6 +46,57 @@ if [ $# -gt 0 ];then
             -w /var/www/html \
             app \
             composer "$@"
+
+    ###############################################
+    # Database
+    #
+    ###############################################
+    elif [ "$1" == "dbdestroy" ]; then
+        shift 1
+        echo "this will destroy and reinstall the datase. Are you sure? [y/N]"
+        read sure
+        if [ "$sure" != "y" ]; then
+            echo "cancelling on user request"
+            exit 1
+        fi
+        $0 exec db mysql -u root -proot -e "DROP DATABASE ${DB_NAME}"
+        $0 exec db mysql -u root -proot -e "CREATE DATABASE ${DB_NAME}"
+        $0 exec db mysql -u root -proot ${DB_NAME} < resources/schema.sql
+        $0 install
+
+    ###############################################
+    # TAIL
+    #
+    # Tail the logfiles
+    ###############################################
+    elif [ "$1" == "tail" ]; then
+        shift 1
+
+        tail -f storage/logs/*.log &
+
+    ###############################################
+    # INSTALL
+    #
+    # For now: composer install && create database
+    ###############################################
+    elif [ "$1" == "install" ]; then
+        shift 1
+
+        $COMPOSE exec db mysql -u $DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS $DB_NAME"
+        $COMPOSE exec db mysql -u $DB_USER -p$DB_PASS $DB_NAME < resources/schema.sql
+        composer install
+        chmod -R 777 storage
+
+    ###############################################
+    # SERVE
+    #
+    # Start the single-threaded internal PHP server
+    ###############################################
+    elif [ "$1" == "serve" ]; then
+        shift 1
+
+        cd web
+        php -S 0.0.0.0:8000
 
     ###############################################
     # TEST
