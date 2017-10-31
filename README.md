@@ -38,6 +38,7 @@ Comment out the line for the PHP-version you don't want and un-comment the line 
 the PHP-version you do want. Then start the Docker-containers with one of the commands above
 like `./dev up`.
 
+##### Setup database
 Then install the database (ignore the errors)
 ```bash
 ./dev exec db mysql -u root -proot api < resources/schema.sql
@@ -84,6 +85,24 @@ In order to create a new call, specify the following data:
 -- in case of regex: 'class="test">([^<]*)<\/a>'. Note that you should always test these calls, because regex is easy to mess up :)
 - (one or more) alias. This is the key which will be used to return the content of the above mentioned element. You can see this as providing the property-name. Like 'name' or 'date'.
 
+```bash
+curl -v -X POST -H "Content-Type: application/json" -d'{
+    "website_name": "wecamp",
+    "website_url":  "http://weca.mp/2017/",
+    "endpoints": [
+        {
+            "name": "coaches",
+            "selectors": [
+                { "selector": "h5.center", "alias": "name" },
+                { "selector": "span.bio", "alias": "bio" },
+                { "selector": "label.card img", "alias": "profile_image" }
+            ]
+        }
+    ]
+}
+' http://localhost:8020/api/v1/create 
+```
+
 On successful creation, an ID should be returned to you, which can be used to update or delete the call.
 ![Create call](web/images/usage_create_call.png)
  
@@ -91,12 +110,36 @@ On successful creation, an ID should be returned to you, which can be used to up
 
 Before submitting a new call, it might be wise to test your call first, to see if the response is retrieved that you might want.
 To do so, simply call the /test endpoint, with the same parameters as you would the /create endpoint. 
+
+```bash
+curl -v -X POST -H "Content-Type: application/json" -d'{
+    "website_name": "wecamp",
+    "website_url":  "http://weca.mp/2017/",
+    "endpoints": [
+        {
+            "name": "coaches",
+            "selectors": [
+                { "selector": "h5.center", "alias": "name" },
+                { "selector": "span.bio", "alias": "bio" },
+                { "selector": "label.card img", "alias": "profile_image" }
+            ]
+        }
+    ]
+}
+' http://localhost:8020/api/v1/test 
+```
+
 ![Test call](web/images/usage_test_call.png)
  
 ### Info call
 
 You can retrieve information about a call, including the endpoint and selectors, by calling the /info/<website_name>/<endpoint_name> endpoint.
 
+```bash
+curl http://localhost:8020/api/v1/info/wecamp/coaches
+```
+
+}
 ![list call](web/images/usage_info_call.png) 
 
 ### List call
@@ -104,11 +147,19 @@ You can retrieve information about a call, including the endpoint and selectors,
 To call the data you created in the create call, simply use the website name and endpoint name in your url as such:
 <website_name>/<end_point_name>
 
+```bash
+curl http://localhost:8020/api/v1/wecamp/coaches
+```
+
 ![list call](web/images/usage_list_call.png) 
 
 ### Search call
 You can search inside one of the specified keys for a certain value. It will also search for partial matches.
 To do this specify your route as such: <website_name>/<end_point>/search/<key>/<query>
+
+```bash
+curl -v http://localhost:8020/api/v1/wecamp/coaches/search/name/Steven%20de%20Vries
+```
 
 ![Search call](web/images/usage_search.png)
 
@@ -116,5 +167,9 @@ To do this specify your route as such: <website_name>/<end_point>/search/<key>/<
 
 To delete a call, simply call the following url: delete/<website_name>/<endpoint_name>
 If no further endpoints exist on the website, the website will be deleted from the system as well.
+
+```bash
+curl -v -X DELETE http://localhost:8020/api/v1/wecamp/coaches
+```
 
 ![Search call](web/images/usage_delete_call.png)

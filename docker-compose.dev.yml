@@ -6,10 +6,10 @@ services:
     # choose the version of PHP you want to work with
     #build: ./docker/php70
     build: ./docker/php71nginx
-    ports:
-      - "80:80"
     volumes:
       - .:/var/www/html
+    ports:
+      - "8000:80"
     environment:
       XDEBUG_HOST: ${XDEBUG_HOST}
 
